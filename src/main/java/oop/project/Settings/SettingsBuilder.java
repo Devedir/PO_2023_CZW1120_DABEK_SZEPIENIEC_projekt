@@ -26,8 +26,8 @@ public class SettingsBuilder {
         initialEnergy = 20;
         breedableEnergy = 50;
         breedingEnergy = initialEnergy / 2;
-        minMutations = 0;
         genomeLength = 7;
+        minMutations = 0;
         maxMutations = genomeLength / 3;
         width = 15;
         height = 10;
@@ -54,16 +54,16 @@ public class SettingsBuilder {
         this.breedingEnergy = breedingEnergy;
     }
 
+    public void setGenomeLength(int genomeLength) {
+        this.genomeLength = genomeLength;
+    }
+
     public void setMinMutations(int minMutations) {
         this.minMutations = minMutations;
     }
 
     public void setMaxMutations(int maxMutations) {
         this.maxMutations = maxMutations;
-    }
-
-    public void setGenomeLength(int genomeLength) {
-        this.genomeLength = genomeLength;
     }
 
     public void setWidth(int width) {

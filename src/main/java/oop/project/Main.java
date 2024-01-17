@@ -53,6 +53,9 @@ public class Main {
         System.out.print("Energia oddawana potomkowi: ");
         if (scanner.hasNextInt()) builder.setBreedingEnergy(scanner.nextInt());
         else scanner.nextLine();
+        System.out.print("Długość genomów: ");
+        if (scanner.hasNextInt()) builder.setGenomeLength(scanner.nextInt());
+        else scanner.nextLine();
         System.out.print("Minimalna liczba mutacji: ");
         if (scanner.hasNextInt()) builder.setMinMutations(scanner.nextInt());
         else scanner.nextLine();

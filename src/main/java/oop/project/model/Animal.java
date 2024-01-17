@@ -13,6 +13,7 @@ public class Animal {
     private int activatedGene;
     private int energy;
 
+    // Kolejne pokolenia
     public Animal(AnimalSettings setts, List<Integer> genome) {
         this.setts = setts;
         direction = (int) Math.round(Math.random() * 7);
@@ -21,6 +22,7 @@ public class Animal {
         energy = 2 * setts.breedingEnergy();
     }
 
+    // Adam i Ewa
     public Animal(AnimalSettings setts) {
         this(setts, new Random().ints(0, 7)
                                 .boxed()
@@ -38,5 +40,17 @@ public class Animal {
     // Używane przy brzegu mapy
     public void bounce() {
         direction = (direction + 4) % 8;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public List<Integer> getGenome() {
+        return genome;
+    }
+
+    public int getEnergy() {
+        return energy;
     }
 }
