@@ -6,29 +6,24 @@ import oop.project.model.WorldMap;
 
 public class Simulation implements Runnable { // TODO
     private final WorldMap worldMap;
-    private final MapSettings mapSettings;
-    private final AnimalSettings animalSettings;
     private int day;
 
     public Simulation(MapSettings mapSettings, AnimalSettings animalSettings) {
-        this.mapSettings = mapSettings;
-        this.animalSettings = animalSettings;
-        worldMap = new WorldMap(mapSettings);
+        worldMap = new WorldMap(mapSettings, animalSettings);
     }
 
     @Override
     public void run() {
         System.out.println("Start!");
-        initializeSimulation();
         day = 1;
-        visualize();
+        worldMap.visualize();
         while (day < 10) { // Warunek tymczasowy
-            removeDeadAnimals();
-            moveAllAnimals();
-            eatPlants();
-            breedAnimals();
-            growPlants();
-            visualize();
+            worldMap.removeDeadAnimals();
+            worldMap.moveAllAnimals();
+            worldMap.eatPlants();
+            worldMap.breedAnimals();
+            worldMap.growPlants();
+            worldMap.visualize();
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -36,26 +31,5 @@ public class Simulation implements Runnable { // TODO
             }
             day++;
         }
-    }
-
-    private void initializeSimulation() { // TODO
-    }
-
-    private void removeDeadAnimals() { // TODO
-    }
-
-    private void moveAllAnimals() { // TODO
-    }
-
-    private void eatPlants() { // TODO
-    }
-
-    private void breedAnimals() { // TODO
-    }
-
-    private void growPlants() { // TODO
-    }
-
-    private void visualize() { // TODO
     }
 }
