@@ -8,7 +8,6 @@ import oop.project.Settings.MapSettings;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class WorldMap {
     private final MapSettings mapSettings;
     private final AnimalSettings animalSettings;
@@ -19,7 +18,18 @@ public class WorldMap {
     public WorldMap(MapSettings mapSettings, AnimalSettings animalSettings) {
         this.mapSettings = mapSettings;
         this.animalSettings = animalSettings;
-        // TODO: inicjalizacja
+        growPlants(mapSettings.initialNumOfPlants());
+        placeInitialAnimals();
+    }
+
+    private void placeInitialAnimals() {
+        for (int i = 0; i < mapSettings.initialNumOfAnimals(); i++) {
+            Vector2d position = new Vector2d(
+                    (int) Math.round(Math.random() * mapSettings.width()),
+                    (int) Math.round(Math.random() * mapSettings.height())
+            );
+            placeAnimal(position);
+        }
     }
 
     public void removeDeadAnimals() { // TODO
@@ -34,19 +44,21 @@ public class WorldMap {
     public void breedAnimals() { // TODO
     }
 
-    public void growPlants() { // TODO
+    public void growPlants(int numOfPlants) { // TODO
     }
 
     public void visualize() { // TODO
     }
 
-    public void place() {
-
+    public void placeAnimal(Vector2d position) {
+        if (!position.isLegal(mapSettings))
+            throw new IllegalArgumentException();
+        animalMap.put(position, new Animal(animalSettings));
     }
 
     // animal ma funkcje turn(), która obraca zwierzaka zgodnie z genotypem
 
-    public boolean checkIfMoveIsLegal(){
+    private boolean checkIfMoveIsLegal(){
         return false;
     }
 

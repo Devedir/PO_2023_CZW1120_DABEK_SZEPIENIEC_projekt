@@ -1,9 +1,15 @@
 package oop.project.model;
 
+import oop.project.Settings.MapSettings;
+
 public record Vector2d(int x, int y) {
     @Override
     public String toString() {
         return "(%d, %d)".formatted(x, y);
+    }
+
+    public boolean isLegal(MapSettings mapSettings) {
+        return x >= 0 && x < mapSettings.width() && y >= 0 && y < mapSettings.height();
     }
 
     public boolean precedes(Vector2d other) {

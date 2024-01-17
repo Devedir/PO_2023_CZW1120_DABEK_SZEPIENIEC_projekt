@@ -6,9 +6,11 @@ import oop.project.model.WorldMap;
 
 public class Simulation implements Runnable { // TODO
     private final WorldMap worldMap;
+    private final MapSettings mapSettings;
     private int day;
 
     public Simulation(MapSettings mapSettings, AnimalSettings animalSettings) {
+        this.mapSettings = mapSettings;
         worldMap = new WorldMap(mapSettings, animalSettings);
     }
 
@@ -22,7 +24,7 @@ public class Simulation implements Runnable { // TODO
             worldMap.moveAllAnimals();
             worldMap.eatPlants();
             worldMap.breedAnimals();
-            worldMap.growPlants();
+            worldMap.growPlants(mapSettings.dailyGrowth());
             worldMap.visualize();
             try {
                 Thread.sleep(500);
