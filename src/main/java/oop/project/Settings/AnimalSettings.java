@@ -1,4 +1,4 @@
-package org.example;
+package oop.project.Settings;
 
 public record AnimalSettings(
         int eatingEnergy,

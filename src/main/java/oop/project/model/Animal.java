@@ -1,6 +1,6 @@
-package org.example.model;
+package oop.project.model;
 
-import org.example.AnimalSettings;
+import oop.project.Settings.AnimalSettings;
 
 import java.util.List;
 import java.util.Random;
@@ -33,5 +33,10 @@ public class Animal {
         direction = (direction + genome.get(activatedGene)) % 8;
         activatedGene = (activatedGene + 1) % setts.genomeLength();
         energy--;
+    }
+
+    // Używane przy brzegu mapy
+    public void bounce() {
+        direction = (direction + 4) % 8;
     }
 }

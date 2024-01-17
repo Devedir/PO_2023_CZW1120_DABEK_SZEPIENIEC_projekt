@@ -1,5 +1,6 @@
-package org.example.model;
+package oop.project.model;
 
+// imo niepotrzebna klasa
 public class Plant implements WorldElement{
     private Vector2d position;
 
