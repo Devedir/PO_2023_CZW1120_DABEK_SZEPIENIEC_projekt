@@ -16,9 +16,9 @@ public class Animal {
     // Kolejne pokolenia
     public Animal(AnimalSettings setts, List<Integer> genome) {
         this.setts = setts;
-        direction = (int) Math.round(Math.random() * 7);
+        direction = (int) Math.floor(Math.random() * 7);
         this.genome = genome;
-        activatedGene = (int) Math.round(Math.random() * setts.genomeLength());
+        activatedGene = (int) Math.floor(Math.random() * setts.genomeLength());
         energy = 2 * setts.breedingEnergy();
     }
 
