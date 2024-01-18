@@ -1,26 +1,31 @@
 package oop.project.model;
 
 import oop.project.Settings.AnimalSettings;
+import oop.project.Statistics.AnimalStats;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Animal {
     private final AnimalSettings setts;
+    private final AnimalStats animalStats;
     private int direction;
     private final List<Integer> genome;
     private int activatedGene;
     private int energy;
+    private int age;
+    private final Set<Animal> children;
 
     // Kolejne pokolenia
     public Animal(AnimalSettings setts, List<Integer> genome) {
+        animalStats = new AnimalStats();
         this.setts = setts;
         direction = (int) Math.floor(Math.random() * 7);
         this.genome = genome;
         activatedGene = (int) Math.floor(Math.random() * setts.genomeLength());
         energy = 2 * setts.breedingEnergy();
+        age = 0;
+        children = new HashSet<>();
     }
 
     // Adam i Ewa
@@ -53,6 +58,18 @@ public class Animal {
 
     public int getEnergy() {
         return energy;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void updateAge() {
+        age++;
+    }
+
+    public Set<Animal> getChildren() {
+        return children;
     }
 
     @Override

@@ -25,6 +25,7 @@ public class Simulation implements Runnable { // TODO
             worldMap.eatPlants();
             worldMap.breedAnimals();
             worldMap.growPlants(mapSettings.dailyGrowth());
+            worldMap.updateStats();
             worldMap.visualize();
             try {
                 Thread.sleep(500);
