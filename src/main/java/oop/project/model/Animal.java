@@ -3,6 +3,7 @@ package oop.project.model;
 import oop.project.Settings.AnimalSettings;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -52,5 +53,18 @@ public class Animal {
 
     public int getEnergy() {
         return energy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return direction == animal.getDirection() && energy == animal.getEnergy();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDirection(), getEnergy());
     }
 }
