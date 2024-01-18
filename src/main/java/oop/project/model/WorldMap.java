@@ -11,9 +11,6 @@ public class WorldMap {
     private final MapSettings mapSettings;
     private final AnimalSettings animalSettings;
     private final Multimap<Vector2d, Animal> animalMap = ArrayListMultimap.create();
-
-    //private Map<Vector2d, Plant> plantMap = new HashMap<>();
-    // Powinno wystarczyć tylko info o pozycji roślinek:
     private final Set<Vector2d> plantPositions = new HashSet<>();
     public WorldMap(MapSettings mapSettings, AnimalSettings animalSettings) {
         this.mapSettings = mapSettings;
@@ -38,7 +35,24 @@ public class WorldMap {
     public void removeDeadAnimals() { // TODO
     }
 
-    public void moveAllAnimals() { // TODO
+    public void moveAllAnimals() {
+        animalMap.asMap().forEach((position, animalCollection) -> { // Po multimapach Google'a nie można iterować po ludzku
+            for (Animal animal : animalCollection) {
+                animal.turn();
+                int direction = animal.getDirection();
+                Vector2d newPosition = position.add(Vector2d.unitVector(direction));
+                if (newPosition.y() < 0 || newPosition.y() >= mapSettings.height()) {
+                    animal.bounce();
+                    continue;
+                } else if (newPosition.x() < 0) {
+                    newPosition = new Vector2d(mapSettings.width() - 1, newPosition.y());
+                } else if (newPosition.x() >= mapSettings.width()) {
+                    newPosition = new Vector2d(0, newPosition.y());
+                }
+                animalMap.put(newPosition, animal);
+                animalCollection.remove(animal);
+            }
+        });
     }
 
     public void eatPlants() { // TODO
@@ -47,7 +61,7 @@ public class WorldMap {
     public void breedAnimals() { // TODO
     }
 
-    public void growPlants(int numOfPlants) { // TODO
+    public void growPlants(int numOfPlants) {
         int grown = 0;
         while (grown < numOfPlants) {
             Vector2d position;
@@ -67,19 +81,14 @@ public class WorldMap {
     }
 
     public void placeAnimal(Vector2d position) {
-        if (!position.isLegal(mapSettings))
-            throw new IllegalArgumentException();
+        if (!isLegal(position))
+            throw new IllegalArgumentException("Nieprawidłowa pozycja: " + position);
         animalMap.put(position, new Animal(animalSettings));
     }
 
-    // animal ma funkcje turn(), która obraca zwierzaka zgodnie z genotypem
-
-    private boolean checkIfMoveIsLegal(){
-        return false;
-    }
-
-    public void makeMove(){
-        // if move is legal make a single move on a multimap
+    private boolean isLegal(Vector2d position){
+        return position.x() >= 0 && position.x() < mapSettings.width() &&
+                position.y() >= 0 && position.y() < mapSettings.height();
     }
 
     public Set<Vector2d> getPlantPositions() {
