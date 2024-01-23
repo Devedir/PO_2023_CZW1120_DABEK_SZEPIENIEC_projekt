@@ -1,23 +1,27 @@
 package oop.project.model;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import oop.project.Settings.AnimalSettings;
 import oop.project.Settings.MapSettings;
 import oop.project.Statistics.MapStats;
+import oop.project.utils.AnimalComparator;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class WorldMap {
     private final MapSettings mapSettings;
     private final AnimalSettings animalSettings;
     private final MapStats mapStats;
-    private final Multimap<Vector2d, Animal> animalMap = ArrayListMultimap.create();
-    private final Set<Vector2d> plantPositions = new HashSet<>();
+    private final ListMultimap<Vector2d, Animal> animalMap; // Oparte na liście, bo chcę sortować
+    private final Set<Vector2d> plantPositions;
     public WorldMap(MapSettings mapSettings, AnimalSettings animalSettings) {
         this.mapSettings = mapSettings;
         this.animalSettings = animalSettings;
+        plantPositions = new HashSet<>();
+        animalMap = ArrayListMultimap.create();
         mapStats = new MapStats(mapSettings, animalSettings, this);
         growPlants(mapSettings.initialNumOfPlants());
         placeInitialAnimals();
@@ -48,7 +52,8 @@ public class WorldMap {
     }
 
     public void moveAllAnimals() {
-        animalMap.asMap().forEach((position, animalCollection) -> { // Po multimapach Google'a nie można iterować po ludzku
+        ListMultimap<Vector2d, Animal> newPositions = ArrayListMultimap.create();
+        animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection) {
                 animal.turn();
                 int direction = animal.getDirection();
@@ -61,10 +66,15 @@ public class WorldMap {
                 } else if (newPosition.x() >= mapSettings.width()) {
                     newPosition = new Vector2d(0, newPosition.y());
                 }
-                animalMap.put(newPosition, animal);
+                newPositions.put(newPosition, animal);
                 animalCollection.remove(animal);
             }
         });
+        animalMap.putAll(newPositions);
+        for (Vector2d key : animalMap.keySet()) {
+            List<Animal> sortedAnimals = animalMap.get(key).stream().sorted(new AnimalComparator()).toList();
+            animalMap.replaceValues(key, sortedAnimals);
+        }
     }
 
     public void eatPlants() { // TODO
@@ -123,7 +133,7 @@ public class WorldMap {
         return plantPositions;
     }
 
-    public Multimap<Vector2d, Animal> getAnimalMap() {
+    public ListMultimap<Vector2d, Animal> getAnimalMap() {
         return animalMap;
     }
 }

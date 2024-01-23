@@ -71,4 +71,18 @@ public class Animal {
     public Set<Animal> getChildren() {
         return children;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return energy == animal.getEnergy() && age == animal.getAge()
+                && getChildren().size() == animal.getChildren().size();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEnergy(), getAge(), getChildren().size());
+    }
 }
