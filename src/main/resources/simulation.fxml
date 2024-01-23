@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ListView?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.text.Font?>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            minHeight="550.0" minWidth="500.0" fx:controller="oop.project.Interface.SimulationController">
+
+    <left>
+        <Pane prefWidth="55.0"/>
+    </left>
+
+    <center>
+        <HBox spacing="20">
+            <!-- First HBox with 7 VBoxes -->
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="Map height"/>
+                <HBox>
+                    <Slider fx:id="heightSlider" max="200.0" min="4.0" value="15.0"/>
+                    <Label fx:id="heightLabel" text="15"/>
+                </HBox>
+                <Label text="Map width"/>
+                <HBox>
+                    <Slider fx:id="widthSlider" max="200.0" min="4.0" value="15.0"/>
+                    <Label fx:id="widthLabel" text="15"/>
+                </HBox>
+                <Label text="Plants Growth Variant"/>
+                <HBox>
+                    <ListView fx:id="plantGrowthListView" orientation="VERTICAL" prefHeight="50.0" prefWidth="180.0"/>
+                </HBox>
+                <Label text="Mutation Variant"/>
+                <HBox>
+                    <ListView fx:id="MutationListView" orientation="VERTICAL" prefHeight="50.0" prefWidth="180.0"/>
+                </HBox>
+                <Label text="Starting Number of Animals"/>
+                <HBox>
+                    <Slider fx:id="startingNumberOfAnimalsSlider" max="200.0" min="1.0" value="1.0"/>
+                    <Label fx:id="startingNumberOfAnimalsLabel" text="1"/>
+                </HBox>
+                <Label text="Starting Number of Plants"/>
+                <HBox>
+                    <Slider fx:id="startingNumberOfPlantsSlider" max="200.0" value="10.0"/>
+                    <Label fx:id="startingNumberOfPlantsLabel" text="10"/>
+                </HBox>
+                <Label text="Number of Daily Added Plants"/>
+                <HBox>
+                    <Slider fx:id="numberOfDailyAddedPlantsSlider" max="200.0" value="5.0"/>
+                    <Label fx:id="numberOfDailyAddedPlantsLabel" text="5"/>
+                </HBox>
+            </VBox>
+
+            <!-- Second HBox with 7 VBoxes -->
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="Starting Animal Energy"/>
+                <HBox>
+                    <Slider fx:id="startingAnimalEnergySlider" max="50.0" min="4.0" value="20.0"/>
+                    <Label fx:id="startingAnimalEnergyLabel" text="20"/>
+                </HBox>
+                <Label text="Amount of Energy from Eating"/>
+                <HBox>
+                    <Slider fx:id="amountOfEnergyFromEatingSlider" max="50.0" min="2.0" value="20.0"/>
+                    <Label fx:id="amountOfEnergyFromEatingLabel" text="20"/>
+                </HBox>
+                <Label text="Energy Needed to Reproduce"/>
+                <HBox>
+                    <Slider fx:id="energyNeededToReproduceSlider" max="75.0" min="6.0" value="30.0"/>
+                    <Label fx:id="energyNeededToReproduceLabel" text="30"/>
+                </HBox>
+                <Label text="Energy Given to Offspring"/>
+                <HBox>
+                    <Slider fx:id="energyGivenToOffspringSlider" max="25.0" min="2.0" value="7.0"/>
+                    <Label fx:id="energyGivenToOffspringLabel" text="7"/>
+                </HBox>
+                <Label text="Length of Genes"/>
+                <HBox>
+                    <Slider fx:id="LengthOfGenesSlider" max="10.0" min="1.0" value="8.0"/>
+                    <Label fx:id="LengthOfGenesLabel" text="8"/>
+                </HBox>
+                <Label text="Minimum Number of Mutations"/>
+                <HBox>
+                    <Slider fx:id="minimumNumberOfMutationSlider" max="10.0" value="2.0"/>
+                    <Label fx:id="minimumNumberOfMutationLabel" text="2"/>
+                </HBox>
+                <Label text="Maximum Number of Mutations"/>
+                <HBox>
+                    <Slider fx:id="maximumNumberOfMutationSlider" max="10.0" value="8.0"/>
+                    <Label fx:id="maximumNumberOfMutationLabel" text="8"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </center>
+
+    <bottom>
+        <VBox alignment="CENTER">
+            <Button fx:id="startButton" onAction="#startButtonClicked" text="START">
+                <font>
+                    <Font size="23.0"/>
+                </font>
+            </Button>
+            <Label text=" "> </Label>
+        </VBox>
+    </bottom>
+
+</BorderPane>
