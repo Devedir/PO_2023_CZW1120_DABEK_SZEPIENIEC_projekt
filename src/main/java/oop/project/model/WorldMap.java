@@ -1,23 +1,28 @@
 package oop.project.model;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import oop.project.Settings.AnimalSettings;
 import oop.project.Settings.MapSettings;
 import oop.project.Statistics.MapStats;
+import oop.project.utils.AnimalComparator;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class WorldMap {
     private final MapSettings mapSettings;
     private final AnimalSettings animalSettings;
     private final MapStats mapStats;
-    private final Multimap<Vector2d, Animal> animalMap = ArrayListMultimap.create();
-    private final Set<Vector2d> plantPositions = new HashSet<>();
+    private final ListMultimap<Vector2d, Animal> animalMap; // Oparte na liście, bo chcę sortować
+    private final Set<Vector2d> plantPositions;
     public WorldMap(MapSettings mapSettings, AnimalSettings animalSettings) {
         this.mapSettings = mapSettings;
         this.animalSettings = animalSettings;
+        plantPositions = new HashSet<>();
+        animalMap = ArrayListMultimap.create();
         mapStats = new MapStats(mapSettings, animalSettings, this);
         growPlants(mapSettings.initialNumOfPlants());
         placeInitialAnimals();
@@ -48,7 +53,8 @@ public class WorldMap {
     }
 
     public void moveAllAnimals() {
-        animalMap.asMap().forEach((position, animalCollection) -> { // Po multimapach Google'a nie można iterować po ludzku
+        ListMultimap<Vector2d, Animal> newPositions = ArrayListMultimap.create();
+        animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection) {
                 animal.turn();
                 int direction = animal.getDirection();
@@ -61,31 +67,69 @@ public class WorldMap {
                 } else if (newPosition.x() >= mapSettings.width()) {
                     newPosition = new Vector2d(0, newPosition.y());
                 }
-                animalMap.put(newPosition, animal);
+                newPositions.put(newPosition, animal);
                 animalCollection.remove(animal);
             }
         });
+        animalMap.putAll(newPositions);
+        for (Vector2d key : animalMap.keySet())
+            animalMap.get(key).sort(new AnimalComparator());
     }
 
-    public void eatPlants() { // TODO
+    public void eatPlants() {
+        Iterator<Vector2d> iterator = plantPositions.iterator();
+        while (iterator.hasNext()) {
+            Vector2d plantPosition = iterator.next();
+            if (!animalMap.containsKey(plantPosition))
+                continue;
+            Animal strongest = animalMap.get(plantPosition).get(0);
+            strongest.eat();
+            iterator.remove();
+        }
     }
 
-    public void breedAnimals() { // TODO
+    public void breedAnimals() {
+        ListMultimap<Vector2d, Animal> newborns = ArrayListMultimap.create();
+        animalMap.asMap().forEach((position, animalCollection) -> {
+            List<Animal> animalList = animalCollection.stream().toList();
+            for (int i = 1; i < animalList.size(); i += 2) {
+                if (animalList.get(i).getEnergy() < animalSettings.breedingEnergy())
+                    break;
+                Animal baby = animalList.get(i - 1).mateWith(animalList.get(i));
+                newborns.put(position, baby);
+            }
+        });
+        animalMap.putAll(newborns);
     }
 
     public void growPlants(int numOfPlants) {
-        int grown = 0;
-        while (grown < numOfPlants) {
+        for (int grown = 0;
+             grown < Math.min(numOfPlants, mapSettings.width() * mapSettings.height() - mapStats.getNumOfPlants());
+             grown++
+        ) {
             Vector2d position;
             double draw = Math.random() * 10.0;
-            if (draw < 8.0)
-                position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
-            else
-                position = randomLegalPosition();
-            if (!plantPositions.contains(position)) {
-                plantPositions.add(position);
-                grown++;
+            if (draw < 8.0) {
+                do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                while (plantPositions.contains(position));
+            } else {
+                final int MAX_ITERATIONS = mapSettings.width() * mapSettings.height() * 4;
+                // Żeby uniknąć bezsensownego siedzenia wieczność w pętli (co jest możliwe przy zatłoczonej mapie)
+                // zakładam, że po takiej ilości iteracji najprawdopodobniej nie ma już żadnych pól 2 kategorii,
+                // więc dodaję roślinę na pole pierwszej kategorii.
+                int i = 0;
+                do {
+                    if (i == MAX_ITERATIONS) {
+                        do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                        while (plantPositions.contains(position));
+                        break;
+                    }
+                    position = randomLegalPosition();
+                    i++;
+                } while (plantPositions.contains(position)
+                        || mapSettings.plantGrowthVariant().isPreferred(position, plantPositions, mapSettings));
             }
+            plantPositions.add(position);
         }
     }
 
@@ -110,7 +154,7 @@ public class WorldMap {
         return plantPositions;
     }
 
-    public Multimap<Vector2d, Animal> getAnimalMap() {
+    public ListMultimap<Vector2d, Animal> getAnimalMap() {
         return animalMap;
     }
 }

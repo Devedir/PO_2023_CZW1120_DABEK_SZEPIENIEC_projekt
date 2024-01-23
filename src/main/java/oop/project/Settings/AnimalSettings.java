@@ -7,6 +7,7 @@ public record AnimalSettings(
         int breedingEnergy,
         int minMutations,
         int maxMutations,
-        int genomeLength
+        int genomeLength,
+        MutationVariant mutationVariant
 ) {
 }

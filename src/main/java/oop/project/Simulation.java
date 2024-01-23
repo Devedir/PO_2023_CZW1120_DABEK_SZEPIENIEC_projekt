@@ -28,7 +28,7 @@ public class Simulation implements Runnable { // TODO
             worldMap.updateStats();
             worldMap.visualize();
             try {
-                Thread.sleep(500);
+                Thread.sleep(500L); // TODO: można ustawić ten czas jako zmienną programu
             } catch (InterruptedException e) {
                 System.err.println("Symulacja przerwana: " + e.getMessage());
             }

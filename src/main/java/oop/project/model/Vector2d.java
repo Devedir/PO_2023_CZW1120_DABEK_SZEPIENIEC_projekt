@@ -2,6 +2,8 @@ package oop.project.model;
 
 import oop.project.Settings.MapSettings;
 
+import java.util.Set;
+
 public record Vector2d(int x, int y) {
     @Override
     public String toString() {
@@ -18,8 +20,12 @@ public record Vector2d(int x, int y) {
             case 5 -> new Vector2d(-1, -1);
             case 6 -> new Vector2d(-1, 0);
             case 7 -> new Vector2d(-1, 1);
-            default -> throw new IllegalStateException("Nieprawidłowy kierunek: " + direction);
+            default -> throw new IllegalArgumentException("Nieprawidłowy kierunek: " + direction);
         };
+    }
+
+    public static Vector2d fitInsideMap(Vector2d vector, MapSettings mapSettings) {
+        return new Vector2d(vector.x() % mapSettings.width(), vector.y());
     }
 
     public boolean precedes(Vector2d other) {

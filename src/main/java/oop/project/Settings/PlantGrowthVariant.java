@@ -9,14 +9,15 @@ public enum PlantGrowthVariant {
     EQUATOR,
     JUNGLE;
 
+    private final double EQUATOR_PERCENTAGE = 0.4; // Ułamek wysokości mapy, który ma stanowić równik
+
     public Vector2d choosePreferredPosition(MapSettings mapSettings, WorldMap worldMap) {
         if (this == EQUATOR) {
-            final double EQUATOR_SIZE = 0.4; // Ułamek wysokości mapy, który ma stanowić równik
             return new Vector2d(
-                    (int) Math.floor(Math.random() * mapSettings.width()),
-                    (int) Math.floor(Math.random()
-                            * mapSettings.height() * EQUATOR_SIZE
-                            + mapSettings.height() * (1.0 - EQUATOR_SIZE) / 2.0)
+                    (int) (Math.random() * mapSettings.width()),
+                    (int) (Math.random()
+                            * mapSettings.height() * EQUATOR_PERCENTAGE
+                            + mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0)
             );
         } else {
             Set<Vector2d> plantPositions = worldMap.getPlantPositions();
@@ -28,16 +29,30 @@ public enum PlantGrowthVariant {
                         .skip((long) (Math.random() * (plantPositions.size() - 1)))
                         .findFirst()
                         .get(); // Bezpieczne w tym przypadku
-            return new Vector2d(
-                    clamp(Math.floor(Math.random() * 3 + randomPlantPosition.x() - 1),
-                            mapSettings.width() - 1),
-                    clamp(Math.floor(Math.random() * 3 + randomPlantPosition.y() - 1),
+            return Vector2d.fitInsideMap(new Vector2d(
+                    (int) (Math.random() * 3 + randomPlantPosition.x() - 1),
+                    clamp((int) (Math.random() * 3 + randomPlantPosition.y() - 1),
                             mapSettings.height() - 1)
-            );
+            ), mapSettings);
         }
     }
 
-    private static int clamp(double value, int max) {
-        return (int) Math.max(0, Math.min(max, value));
+    public boolean isPreferred(Vector2d position, Set<Vector2d> plantPositions, MapSettings mapSettings) {
+        if (this == EQUATOR) {
+            return position.y() >= mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0
+                    && position.y() <= mapSettings.height() * EQUATOR_PERCENTAGE
+                                        + mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0;
+        } else {
+            for (int direction = 0; direction < 8; direction++)
+                if (plantPositions.contains(
+                        Vector2d.fitInsideMap(position.add(Vector2d.unitVector(direction)), mapSettings)
+                ))
+                    return true;
+            return false;
+        }
+    }
+
+    private static int clamp(int value, int max) {
+        return Math.max(0, Math.min(max, value));
     }
 }
