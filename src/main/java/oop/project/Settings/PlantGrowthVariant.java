@@ -40,6 +40,4 @@ public enum PlantGrowthVariant {
     private static int clamp(double value, int max) {
         return (int) Math.max(0, Math.min(max, value));
     }
-
-    public int getEquatorSize()
 }
