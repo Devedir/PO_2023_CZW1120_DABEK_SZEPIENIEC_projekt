@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Animal {
-    private final AnimalSettings setts;
+    private final AnimalSettings animalSettings;
     private final AnimalStats animalStats;
     private int direction;
     private final List<Integer> genome;
@@ -17,35 +17,39 @@ public class Animal {
     private final Set<Animal> children;
 
     // Kolejne pokolenia
-    public Animal(AnimalSettings setts, List<Integer> genome) {
+    public Animal(AnimalSettings animalSettings, List<Integer> genome) {
         animalStats = new AnimalStats();
-        this.setts = setts;
+        this.animalSettings = animalSettings;
         direction = (int) Math.floor(Math.random() * 7);
         this.genome = genome;
-        activatedGene = (int) Math.floor(Math.random() * setts.genomeLength());
-        energy = 2 * setts.breedingEnergy();
+        activatedGene = (int) Math.floor(Math.random() * animalSettings.genomeLength());
+        energy = 2 * animalSettings.breedingEnergy();
         age = 0;
         children = new HashSet<>();
     }
 
     // Adam i Ewa
-    public Animal(AnimalSettings setts) {
-        this(setts, new Random().ints(0, 7)
+    public Animal(AnimalSettings animalSettings) {
+        this(animalSettings, new Random().ints(0, 7)
                                 .boxed()
-                                .limit(setts.genomeLength())
+                                .limit(animalSettings.genomeLength())
                                 .collect(Collectors.toList()));
-        energy = setts.initialEnergy();
+        energy = animalSettings.initialEnergy();
     }
 
     public void turn() {
         direction = (direction + genome.get(activatedGene)) % 8;
-        activatedGene = (activatedGene + 1) % setts.genomeLength();
+        activatedGene = (activatedGene + 1) % animalSettings.genomeLength();
         energy--;
     }
 
     // Używane przy brzegu mapy
     public void bounce() {
         direction = (direction + 4) % 8;
+    }
+
+    public void eat() {
+        energy += animalSettings.eatingEnergy();
     }
 
     public int getDirection() {

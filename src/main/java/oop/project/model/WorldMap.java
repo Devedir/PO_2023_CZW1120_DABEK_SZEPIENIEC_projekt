@@ -8,7 +8,7 @@ import oop.project.Statistics.MapStats;
 import oop.project.utils.AnimalComparator;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 public class WorldMap {
@@ -71,13 +71,20 @@ public class WorldMap {
             }
         });
         animalMap.putAll(newPositions);
-        for (Vector2d key : animalMap.keySet()) {
-            List<Animal> sortedAnimals = animalMap.get(key).stream().sorted(new AnimalComparator()).toList();
-            animalMap.replaceValues(key, sortedAnimals);
-        }
+        for (Vector2d key : animalMap.keySet())
+            animalMap.get(key).sort(new AnimalComparator());
     }
 
-    public void eatPlants() { // TODO
+    public void eatPlants() {
+        Iterator<Vector2d> iterator = plantPositions.iterator();
+        while (iterator.hasNext()) {
+            Vector2d plantPosition = iterator.next();
+            if (!animalMap.containsKey(plantPosition))
+                continue;
+            Animal strongest = animalMap.get(plantPosition).get(0);
+            strongest.eat();
+            iterator.remove();
+        }
     }
 
     public void breedAnimals() { // TODO
