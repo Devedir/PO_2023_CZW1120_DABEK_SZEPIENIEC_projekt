@@ -97,13 +97,13 @@ public class SettingsBuilder {
     public AnimalSettings buildAnimalSettings() {
         return new AnimalSettings(
                 eatingEnergy, initialEnergy, breedableEnergy, breedingEnergy,
-                minMutations, maxMutations, genomeLength
+                minMutations, maxMutations, genomeLength, mutationVariant
         );
     }
 
     public MapSettings buildMapSettings() {
         return new MapSettings(
-                width, height, plantGrowthVariant, mutationVariant,
+                width, height, plantGrowthVariant,
                 initialNumOfPlants, initialNumOfAnimals, dailyGrowth
         );
     }

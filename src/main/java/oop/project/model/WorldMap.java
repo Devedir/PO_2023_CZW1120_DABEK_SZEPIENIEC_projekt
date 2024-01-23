@@ -9,6 +9,7 @@ import oop.project.utils.AnimalComparator;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class WorldMap {
@@ -87,7 +88,18 @@ public class WorldMap {
         }
     }
 
-    public void breedAnimals() { // TODO
+    public void breedAnimals() {
+        ListMultimap<Vector2d, Animal> newborns = ArrayListMultimap.create();
+        animalMap.asMap().forEach((position, animalCollection) -> {
+            List<Animal> animalList = animalCollection.stream().toList();
+            for (int i = 1; i < animalList.size(); i += 2) {
+                if (animalList.get(i).getEnergy() < animalSettings.breedingEnergy())
+                    break;
+                Animal baby = animalList.get(i - 1).mateWith(animalList.get(i));
+                newborns.put(position, baby);
+            }
+        });
+        animalMap.putAll(newborns);
     }
 
     public void growPlants(int numOfPlants) {
@@ -95,8 +107,7 @@ public class WorldMap {
              grown < Math.min(numOfPlants, mapSettings.width() * mapSettings.height() - mapStats.getNumOfPlants());
              grown++
         ) {
-            Vector2d position = new Vector2d(0, 0);
-            // Wartość domyślna dla skrajnego przypadku nieznalezienia pozycji
+            Vector2d position;
             double draw = Math.random() * 10.0;
             if (draw < 8.0) {
                 do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);

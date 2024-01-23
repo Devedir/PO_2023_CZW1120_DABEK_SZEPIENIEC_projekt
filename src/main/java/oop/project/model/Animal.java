@@ -2,6 +2,7 @@ package oop.project.model;
 
 import oop.project.Settings.AnimalSettings;
 import oop.project.Statistics.AnimalStats;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,6 +51,22 @@ public class Animal {
 
     public void eat() {
         energy += animalSettings.eatingEnergy();
+    }
+
+    public Animal mateWith(Animal weakerPartner) {
+        double cuttingPercentage = (double) weakerPartner.getEnergy() / energy;
+        int numOfStrongerGenes = (int) Math.ceil(genome.size() * cuttingPercentage);
+        List<Integer> newGenome = new ArrayList<>();
+        if (Math.random() < 0.5) { // strona lewa
+            newGenome.addAll(genome.subList(0, numOfStrongerGenes));
+            newGenome.addAll(weakerPartner.getGenome().subList(numOfStrongerGenes, animalSettings.genomeLength()));
+        } else { // strona prawa
+            int numOfWeakerGenes = animalSettings.genomeLength() - numOfStrongerGenes;
+            newGenome.addAll(weakerPartner.getGenome().subList(0, numOfWeakerGenes));
+            newGenome.addAll(genome.subList(numOfWeakerGenes, animalSettings.genomeLength()));
+        }
+        animalSettings.mutationVariant().mutateGenome(newGenome, animalSettings);
+        return new Animal(animalSettings, newGenome);
     }
 
     public int getDirection() {
