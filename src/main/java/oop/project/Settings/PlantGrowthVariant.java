@@ -9,14 +9,15 @@ public enum PlantGrowthVariant {
     EQUATOR,
     JUNGLE;
 
+    private final double EQUATOR_PERCENTAGE = 0.4; // Ułamek wysokości mapy, który ma stanowić równik
+
     public Vector2d choosePreferredPosition(MapSettings mapSettings, WorldMap worldMap) {
         if (this == EQUATOR) {
-            final double EQUATOR_SIZE = 0.4; // Ułamek wysokości mapy, który ma stanowić równik
             return new Vector2d(
                     (int) Math.floor(Math.random() * mapSettings.width()),
                     (int) Math.floor(Math.random()
-                            * mapSettings.height() * EQUATOR_SIZE
-                            + mapSettings.height() * (1.0 - EQUATOR_SIZE) / 2.0)
+                            * mapSettings.height() * EQUATOR_PERCENTAGE
+                            + mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0)
             );
         } else {
             Set<Vector2d> plantPositions = worldMap.getPlantPositions();
@@ -28,16 +29,17 @@ public enum PlantGrowthVariant {
                         .skip((long) (Math.random() * (plantPositions.size() - 1)))
                         .findFirst()
                         .get(); // Bezpieczne w tym przypadku
-            return new Vector2d(
-                    clamp(Math.floor(Math.random() * 3 + randomPlantPosition.x() - 1),
-                            mapSettings.width() - 1),
+            return Vector2d.fitInsideMap(new Vector2d(
+                    (int) Math.floor(Math.random() * 3 + randomPlantPosition.x() - 1),
                     clamp(Math.floor(Math.random() * 3 + randomPlantPosition.y() - 1),
                             mapSettings.height() - 1)
-            );
+            ), mapSettings);
         }
     }
 
     private static int clamp(double value, int max) {
         return (int) Math.max(0, Math.min(max, value));
     }
+
+    public int getEquatorSize()
 }

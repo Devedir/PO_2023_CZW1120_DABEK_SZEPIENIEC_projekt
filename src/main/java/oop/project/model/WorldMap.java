@@ -74,18 +74,31 @@ public class WorldMap {
     }
 
     public void growPlants(int numOfPlants) {
-        int grown = 0;
-        while (grown < numOfPlants) {
-            Vector2d position;
+        for (int grown = 0;
+             grown < Math.min(numOfPlants, mapSettings.width() * mapSettings.height() - mapStats.getNumOfPlants());
+             grown++
+        ) {
+            Vector2d position = new Vector2d(0, 0);
+            // Wartość domyślna dla skrajnego przypadku nieznalezienia pozycji
+            final int MAX_ITERATIONS = mapSettings.width() * mapSettings.height() * 3;
+            // Żeby uniknąć bezsensownego siedzenia wieczność w pętli (co jest możliwe przy zatłoczonej mapie)
             double draw = Math.random() * 10.0;
-            if (draw < 8.0)
-                position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
-            else
-                position = randomLegalPosition();
-            if (!plantPositions.contains(position)) {
-                plantPositions.add(position);
-                grown++;
+            if (draw < 8.0) {
+                int i = 0;
+                do {
+                    if (i == MAX_ITERATIONS) break;
+                    position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                    i++;
+                } while (plantPositions.contains(position));
+            } else {
+                int i = 0;
+                do {
+                    if (i == MAX_ITERATIONS) break;
+                    position = randomLegalPosition();
+                    i++;
+                } while (plantPositions.contains(position) || position.isNextToPlant(plantPositions, mapSettings));
             }
+            plantPositions.add(position);
         }
     }
 
