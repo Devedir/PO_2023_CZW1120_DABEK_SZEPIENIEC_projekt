@@ -14,8 +14,8 @@ public enum PlantGrowthVariant {
     public Vector2d choosePreferredPosition(MapSettings mapSettings, WorldMap worldMap) {
         if (this == EQUATOR) {
             return new Vector2d(
-                    (int) Math.floor(Math.random() * mapSettings.width()),
-                    (int) Math.floor(Math.random()
+                    (int) (Math.random() * mapSettings.width()),
+                    (int) (Math.random()
                             * mapSettings.height() * EQUATOR_PERCENTAGE
                             + mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0)
             );
@@ -30,14 +30,29 @@ public enum PlantGrowthVariant {
                         .findFirst()
                         .get(); // Bezpieczne w tym przypadku
             return Vector2d.fitInsideMap(new Vector2d(
-                    (int) Math.floor(Math.random() * 3 + randomPlantPosition.x() - 1),
-                    clamp(Math.floor(Math.random() * 3 + randomPlantPosition.y() - 1),
+                    (int) (Math.random() * 3 + randomPlantPosition.x() - 1),
+                    clamp((int) (Math.random() * 3 + randomPlantPosition.y() - 1),
                             mapSettings.height() - 1)
             ), mapSettings);
         }
     }
 
-    private static int clamp(double value, int max) {
-        return (int) Math.max(0, Math.min(max, value));
+    public boolean isPreferred(Vector2d position, Set<Vector2d> plantPositions, MapSettings mapSettings) {
+        if (this == EQUATOR) {
+            return position.y() >= mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0
+                    && position.y() <= mapSettings.height() * EQUATOR_PERCENTAGE
+                                        + mapSettings.height() * (1.0 - EQUATOR_PERCENTAGE) / 2.0;
+        } else {
+            for (int direction = 0; direction < 8; direction++)
+                if (plantPositions.contains(
+                        Vector2d.fitInsideMap(position.add(Vector2d.unitVector(direction)), mapSettings)
+                ))
+                    return true;
+            return false;
+        }
+    }
+
+    private static int clamp(int value, int max) {
+        return Math.max(0, Math.min(max, value));
     }
 }

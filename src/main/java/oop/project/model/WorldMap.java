@@ -97,23 +97,26 @@ public class WorldMap {
         ) {
             Vector2d position = new Vector2d(0, 0);
             // Wartość domyślna dla skrajnego przypadku nieznalezienia pozycji
-            final int MAX_ITERATIONS = mapSettings.width() * mapSettings.height() * 3;
-            // Żeby uniknąć bezsensownego siedzenia wieczność w pętli (co jest możliwe przy zatłoczonej mapie)
             double draw = Math.random() * 10.0;
             if (draw < 8.0) {
-                int i = 0;
-                do {
-                    if (i == MAX_ITERATIONS) break;
-                    position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
-                    i++;
-                } while (plantPositions.contains(position));
+                do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                while (plantPositions.contains(position));
             } else {
+                final int MAX_ITERATIONS = mapSettings.width() * mapSettings.height() * 4;
+                // Żeby uniknąć bezsensownego siedzenia wieczność w pętli (co jest możliwe przy zatłoczonej mapie)
+                // zakładam, że po takiej ilości iteracji najprawdopodobniej nie ma już żadnych pól 2 kategorii,
+                // więc dodaję roślinę na pole pierwszej kategorii.
                 int i = 0;
                 do {
-                    if (i == MAX_ITERATIONS) break;
+                    if (i == MAX_ITERATIONS) {
+                        do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                        while (plantPositions.contains(position));
+                        break;
+                    }
                     position = randomLegalPosition();
                     i++;
-                } while (plantPositions.contains(position) || position.isNextToPlant(plantPositions, mapSettings));
+                } while (plantPositions.contains(position)
+                        || mapSettings.plantGrowthVariant().isPreferred(position, plantPositions, mapSettings));
             }
             plantPositions.add(position);
         }

@@ -28,15 +28,6 @@ public record Vector2d(int x, int y) {
         return new Vector2d(vector.x() % mapSettings.width(), vector.y());
     }
 
-    public boolean isNextToPlant(Set<Vector2d> plantPositions, MapSettings mapSettings) {
-        for (int direction = 0; direction < 8; direction++)
-            if (plantPositions.contains(
-                    fitInsideMap(this.add(unitVector(direction)), mapSettings)
-                ))
-                    return true;
-        return false;
-    }
-
     public boolean precedes(Vector2d other) {
         return x <= other.x() && y <= other.y();
     }
