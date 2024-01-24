@@ -19,6 +19,7 @@ public class SettingsBuilder {
     int initialNumOfPlants;
     int initialNumOfAnimals;
     int dailyGrowth;
+    int durationOfDay;
 
     //Ustawia wartości domyślne
     public SettingsBuilder() {
@@ -104,7 +105,11 @@ public class SettingsBuilder {
     public MapSettings buildMapSettings() {
         return new MapSettings(
                 width, height, plantGrowthVariant,
-                initialNumOfPlants, initialNumOfAnimals, dailyGrowth
+                initialNumOfPlants, initialNumOfAnimals, dailyGrowth, durationOfDay
         );
+    }
+
+    public void setDurationOfDays(int durationOfDay) {
+        this.durationOfDay = durationOfDay;
     }
 }

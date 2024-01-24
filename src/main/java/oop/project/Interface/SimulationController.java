@@ -76,6 +76,10 @@ public class SimulationController implements Initializable {
     @FXML
     public Label maximumNumberOfMutationLabel;
     @FXML
+    public ListView<String> doYouWantToSaveTheStatsListView;
+    public Slider durationOfDaySlider;
+    public Label durationOfDayLabel;
+    @FXML
     private ListView<String> plantGrowthListView;
     @FXML
     private ListView<String> MutationListView;
@@ -83,6 +87,7 @@ public class SimulationController implements Initializable {
     int mapWidth;
     String plantsGrowthVariant;
     String mutationVariant;
+    String doYouWantToSaveTheStats;
     int startingNumberOfAnimals;
     int startingNumberOfPlants;
     int numberOfDailyAddedPlants;
@@ -93,8 +98,10 @@ public class SimulationController implements Initializable {
     int lengthOfGenes;
     int minimumNumberOfMutations;
     int maximumNumberOfMutations;
+    int durationOfDay = 300;
     String[] plantsGrowthToChoose = {"forested equator", "moving jungle"};
     String[] mutationsToChoose = {"complete random", "small correction"};
+    String[] doYouWantToSaveTheStatsToChoose = {"Yes", "No"};
 
 
 
@@ -115,6 +122,16 @@ public class SimulationController implements Initializable {
         System.out.println(maximumNumberOfMutations);
         System.out.println(plantsGrowthVariant);
         System.out.println(mutationVariant);
+        System.out.println(durationOfDay);
+
+        boolean doYouWantToSaveStatsBool;
+        if (Objects.equals(doYouWantToSaveTheStats, "Yes")) {
+            doYouWantToSaveStatsBool = true;
+        } else {
+            doYouWantToSaveStatsBool = false;
+        }
+
+        System.out.println(doYouWantToSaveStatsBool);
 
         SettingsBuilder builder = new SettingsBuilder();
 
@@ -146,6 +163,7 @@ public class SimulationController implements Initializable {
         builder.setGenomeLength(lengthOfGenes);
         builder.setMinMutations(minimumNumberOfMutations);
         builder.setMaxMutations(maximumNumberOfMutations);
+        builder.setDurationOfDays(durationOfDay);
 
         System.out.println("builder stworzony!");
 
@@ -155,8 +173,6 @@ public class SimulationController implements Initializable {
         );
 
         openSimulationVisStage();
-
-
 
     }
 
@@ -222,6 +238,8 @@ public class SimulationController implements Initializable {
                     setMaximumNumberOfMutations(lengthOfGenes);
                 } else setMaximumNumberOfMutations(Math.max(value, minimumNumberOfMutations));
                 break;
+            case 13:
+                setDurationOfDay(value);
         }
     }
 
@@ -253,6 +271,7 @@ public class SimulationController implements Initializable {
         setupDefaultValues(LengthOfGenesSlider,  10);
         setupDefaultValues(minimumNumberOfMutationSlider, 11);
         setupDefaultValues(maximumNumberOfMutationSlider, 12);
+        setupDefaultValues(durationOfDaySlider, 13);
 
         setupSlider(heightSlider, heightLabel, 1);
         setupSlider(widthSlider, widthLabel, 2);
@@ -266,15 +285,25 @@ public class SimulationController implements Initializable {
         setupSlider(LengthOfGenesSlider, LengthOfGenesLabel, 10);
         setupSlider(minimumNumberOfMutationSlider, minimumNumberOfMutationLabel, 11);
         setupSlider(maximumNumberOfMutationSlider, maximumNumberOfMutationLabel, 12);
+        setupSlider(durationOfDaySlider, durationOfDayLabel, 13);
 
         plantGrowthListView.getItems().addAll(plantsGrowthToChoose);
         MutationListView.getItems().addAll(mutationsToChoose);
+        doYouWantToSaveTheStatsListView.getItems().addAll(doYouWantToSaveTheStatsToChoose);
 
         plantGrowthListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 plantsGrowthVariant = plantGrowthListView.getSelectionModel().getSelectedItem());
 
         MutationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 mutationVariant = MutationListView.getSelectionModel().getSelectedItem());
+
+        doYouWantToSaveTheStatsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                doYouWantToSaveTheStats = doYouWantToSaveTheStatsListView.getSelectionModel().getSelectedItem());
+
+
+        plantGrowthListView.getSelectionModel().select(1);
+        MutationListView.getSelectionModel().select(1);
+        doYouWantToSaveTheStatsListView.getSelectionModel().select(1);
 
     }
 
@@ -327,6 +356,10 @@ public class SimulationController implements Initializable {
     public void setMaximumNumberOfMutations(int maximumNumberOfMutations) {
         this.maximumNumberOfMutations = maximumNumberOfMutations;
     }
+    public void setDurationOfDay(int durationOfDay) {
+        this.durationOfDay = durationOfDay;
+    }
+
 
     public void openSimulationVisStage() {
         try {

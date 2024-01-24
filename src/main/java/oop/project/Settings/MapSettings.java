@@ -6,6 +6,7 @@ public record MapSettings(
         PlantGrowthVariant plantGrowthVariant,
         int initialNumOfPlants,
         int initialNumOfAnimals,
-        int dailyGrowth
+        int dailyGrowth,
+        int durationOfDay
 ) {
 }
