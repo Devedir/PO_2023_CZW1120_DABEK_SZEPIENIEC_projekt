@@ -23,7 +23,7 @@ public class Simulation implements Runnable { // TODO
             worldMap.removeDeadAnimals();
             worldMap.moveAllAnimals();
             worldMap.eatPlants();
-            worldMap.breedAnimals();
+            worldMap.breedAnimals(day);
             worldMap.growPlants(mapSettings.dailyGrowth());
             worldMap.updateStats();
             worldMap.visualize();

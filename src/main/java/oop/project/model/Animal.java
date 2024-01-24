@@ -2,7 +2,6 @@ package oop.project.model;
 
 import oop.project.Settings.AnimalSettings;
 import oop.project.Statistics.AnimalStats;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,10 +14,14 @@ public class Animal {
     private int activatedGene;
     private int energy;
     private int age;
-    private final Set<Animal> children;
+    private int birthday;
+    private final List<Animal> children;
+    private Optional<Animal> parent1;
+    private Optional<Animal> parent2;
+    private List<Animal> descendants;
 
     // Kolejne pokolenia
-    public Animal(AnimalSettings animalSettings, List<Integer> genome) {
+    public Animal(AnimalSettings animalSettings, List<Integer> genome, Animal parent1, Animal parent2, int birthday) {
         animalStats = new AnimalStats();
         this.animalSettings = animalSettings;
         direction = (int) Math.floor(Math.random() * 7);
@@ -26,7 +29,12 @@ public class Animal {
         activatedGene = (int) Math.floor(Math.random() * animalSettings.genomeLength());
         energy = 2 * animalSettings.breedingEnergy();
         age = 0;
-        children = new HashSet<>();
+        this.birthday = birthday;
+        children = new ArrayList<>();
+        this.parent1 = parent1 == null ?
+                Optional.empty() : Optional.of(parent1);
+        this.parent2 = parent2 == null ?
+                Optional.empty() : Optional.of(parent2);
     }
 
     // Adam i Ewa
@@ -34,7 +42,8 @@ public class Animal {
         this(animalSettings, new Random().ints(0, 7)
                                 .boxed()
                                 .limit(animalSettings.genomeLength())
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()),
+                null, null, 1);
         energy = animalSettings.initialEnergy();
     }
 
@@ -53,7 +62,7 @@ public class Animal {
         energy += animalSettings.eatingEnergy();
     }
 
-    public Animal mateWith(Animal weakerPartner) {
+    public Animal mateWith(Animal weakerPartner, int birthday) {
         double cuttingPercentage = (double) weakerPartner.getEnergy() / energy;
         int numOfStrongerGenes = (int) Math.ceil(genome.size() * cuttingPercentage);
         List<Integer> newGenome = new ArrayList<>();
@@ -66,7 +75,21 @@ public class Animal {
             newGenome.addAll(genome.subList(numOfWeakerGenes, animalSettings.genomeLength()));
         }
         animalSettings.mutationVariant().mutateGenome(newGenome, animalSettings);
-        return new Animal(animalSettings, newGenome);
+        Animal child = new Animal(animalSettings, newGenome, this, weakerPartner, birthday);
+        children.add(child);
+        descendants.add(child);
+        return child;
+    }
+
+    public void die() {
+        parent1.ifPresent(animal -> animal.reattachDescendants(this));
+        parent2.ifPresent(animal -> animal.reattachDescendants(this));
+    }
+
+    public void reattachDescendants(Animal deadChild) {
+        descendants.addAll(deadChild.getChildren());
+        descendants.remove(deadChild);
+        children.remove(deadChild);
     }
 
     public int getDirection() {
@@ -89,7 +112,7 @@ public class Animal {
         age++;
     }
 
-    public Set<Animal> getChildren() {
+    public List<Animal> getChildren() {
         return children;
     }
 

@@ -49,7 +49,17 @@ public class WorldMap {
         );
     }
 
-    public void removeDeadAnimals() { // TODO
+    public void removeDeadAnimals() {
+        animalMap.asMap().forEach((position, animalCollection) -> {
+            Iterator<Animal> iterator = animalCollection.iterator();
+            while (iterator.hasNext()) {
+                Animal animal = iterator.next();
+                if (animal.getEnergy() == 0) {
+                    animal.die();
+                    iterator.remove();
+                }
+            }
+        });
     }
 
     public void moveAllAnimals() {
@@ -88,14 +98,14 @@ public class WorldMap {
         }
     }
 
-    public void breedAnimals() {
+    public void breedAnimals(int birthday) {
         ListMultimap<Vector2d, Animal> newborns = ArrayListMultimap.create();
         animalMap.asMap().forEach((position, animalCollection) -> {
             List<Animal> animalList = animalCollection.stream().toList();
             for (int i = 1; i < animalList.size(); i += 2) {
                 if (animalList.get(i).getEnergy() < animalSettings.breedingEnergy())
                     break;
-                Animal baby = animalList.get(i - 1).mateWith(animalList.get(i));
+                Animal baby = animalList.get(i - 1).mateWith(animalList.get(i), birthday);
                 newborns.put(position, baby);
             }
         });
