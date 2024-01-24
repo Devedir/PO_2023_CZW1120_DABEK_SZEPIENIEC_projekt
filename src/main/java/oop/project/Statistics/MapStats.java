@@ -103,15 +103,18 @@ public class MapStats {
         return Optional.of(popularGenome);
     }
 
-    public double getAverageEnergy() {
-        return ((double) energySum) / numOfAnimals;
+    public OptionalDouble getAverageEnergy() {
+        return numOfAnimals == 0 ?
+                OptionalDouble.empty() : OptionalDouble.of((double) energySum / numOfAnimals);
     }
 
-    public double getAverageLifespan() {
-        return ((double) lifespanSum) / numOfDeadAnimals;
+    public OptionalDouble getAverageLifespan() {
+        return numOfDeadAnimals == 0 ?
+                OptionalDouble.empty() : OptionalDouble.of((double) lifespanSum / numOfDeadAnimals);
     }
 
-    public double getAverageNumOfChildren() {
-        return ((double) numOfChildrenSum) / numOfAnimals;
+    public OptionalDouble getAverageNumOfChildren() {
+        return numOfAnimals == 0 ?
+                OptionalDouble.empty() : OptionalDouble.of((double) numOfChildrenSum / numOfAnimals);
     }
 }
