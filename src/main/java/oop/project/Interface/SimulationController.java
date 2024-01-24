@@ -72,9 +72,9 @@ public class SimulationController implements Initializable {
     @FXML
     public Label maximumNumberOfMutationLabel;
     @FXML
-    private ListView plantGrowthListView;
+    private ListView<String> plantGrowthListView;
     @FXML
-    private ListView MutationListView;
+    private ListView<String> MutationListView;
     int mapHeight;
     int mapWidth;
     String plantsGrowthVariant;
@@ -179,11 +179,7 @@ public class SimulationController implements Initializable {
                 }
                 break;
             case 5:
-                if (mapHeight * mapWidth < value) {
-                    setStartingNumberOfPlants(mapHeight * mapWidth);
-                } else {
-                    setStartingNumberOfPlants(value);
-                }
+                setStartingNumberOfPlants(Math.min(mapHeight * mapWidth, value));
                 break;
             case 6:
                 setNumberOfDailyAddedPlants(value);
@@ -223,11 +219,7 @@ public class SimulationController implements Initializable {
             case 12:
                 if (lengthOfGenes < value) {
                     setMaximumNumberOfMutations(lengthOfGenes);
-                } else if (value < minimumNumberOfMutations) {
-                    setMaximumNumberOfMutations(minimumNumberOfMutations);
-                } else {
-                    setMaximumNumberOfMutations(value);
-                }
+                } else setMaximumNumberOfMutations(Math.max(value, minimumNumberOfMutations));
                 break;
         }
     }
@@ -238,13 +230,10 @@ public class SimulationController implements Initializable {
     }
 
     private void setupSlider(Slider someSlider, Label someLabel, int index) {
-        someSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                int value = (int) someSlider.getValue();
-                someLabel.setText(Integer.toString(value));
-                setAll(index, value);
-            }
+        someSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int value = (int) someSlider.getValue();
+            someLabel.setText(Integer.toString(value));
+            setAll(index, value);
         });
     }
 
@@ -280,19 +269,11 @@ public class SimulationController implements Initializable {
         plantGrowthListView.getItems().addAll(plantsGrowthToChoose);
         MutationListView.getItems().addAll(mutationsToChoose);
 
-        plantGrowthListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                plantsGrowthVariant = (String) plantGrowthListView.getSelectionModel().getSelectedItem();
-            }
-        });
+        plantGrowthListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                plantsGrowthVariant = plantGrowthListView.getSelectionModel().getSelectedItem());
 
-        MutationListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                mutationVariant = (String) MutationListView.getSelectionModel().getSelectedItem();
-            }
-        });
+        MutationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                mutationVariant = MutationListView.getSelectionModel().getSelectedItem());
 
     }
 
