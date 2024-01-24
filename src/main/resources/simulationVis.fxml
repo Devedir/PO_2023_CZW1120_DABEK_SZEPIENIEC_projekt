@@ -6,9 +6,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
 
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            minHeight="550.0" minWidth="500.0" fx:controller="oop.project.Interface.SimulationVisController">
+    <center>
+        <Label text="tu będą zwięrzęta!"> </Label>
+    </center>
+
+</BorderPane>

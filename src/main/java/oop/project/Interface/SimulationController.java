@@ -5,7 +5,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -15,6 +18,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.stage.Stage;
 import oop.project.Settings.SettingsBuilder;
 import oop.project.Settings.MutationVariant;
 import oop.project.Settings.PlantGrowthVariant;
@@ -84,14 +88,14 @@ public class SimulationController implements Initializable {
     int numberOfDailyAddedPlants;
     int startingAnimalEnergy;
     int amountOfEnergyFromEating;
-    int energyNeededToReproduce;
+    int energyNeededToReproduce = 30;
     int energyGivenToOffspring;
     int lengthOfGenes;
     int minimumNumberOfMutations;
     int maximumNumberOfMutations;
-
     String[] plantsGrowthToChoose = {"forested equator", "moving jungle"};
     String[] mutationsToChoose = {"complete random", "small correction"};
+
 
 
     public void startButtonClicked(ActionEvent actionEvent) {
@@ -150,10 +154,7 @@ public class SimulationController implements Initializable {
                 builder.buildAnimalSettings()
         );
 
-
-//        TODO
-//        Application.launch(SomeNewSimulationApp.class);
-
+        openSimulationVisStage();
 
 
 
@@ -325,6 +326,27 @@ public class SimulationController implements Initializable {
 
     public void setMaximumNumberOfMutations(int maximumNumberOfMutations) {
         this.maximumNumberOfMutations = maximumNumberOfMutations;
+    }
+
+    public void openSimulationVisStage() {
+        try {
+            System.out.println("printuje klasse przy FXMLLoaderze: ");
+            System.out.println(getClass());
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("simulationVis.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Simulation Visualization");
+
+            // Set the scene with the loaded FXML content
+            stage.setScene(new Scene(root));
+
+            // Show the new stage
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.toString());
+        }
     }
 
 }
