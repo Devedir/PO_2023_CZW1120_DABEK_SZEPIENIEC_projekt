@@ -56,7 +56,7 @@
                     <Slider fx:id="numberOfDailyAddedPlantsSlider" max="200.0" value="5.0"/>
                     <Label fx:id="numberOfDailyAddedPlantsLabel" text="5"/>
                 </HBox>
-                <Label text="Duration of day [ms]"/>
+                <Label text="Duration of day[ms]"/>
                 <HBox>
                     <Slider fx:id="durationOfDaySlider" max="1000.0" min="100.0" value="300.0"/>
                     <Label fx:id="durationOfDayLabel" text="300"/>
