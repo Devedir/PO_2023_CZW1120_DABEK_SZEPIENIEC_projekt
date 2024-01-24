@@ -61,7 +61,6 @@ public class WorldMap {
         ListMultimap<Vector2d, Animal> newPositions = ArrayListMultimap.create();
         animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection) {
-                animal.turn();
                 int direction = animal.getDirection();
                 Vector2d newPosition = position.add(Vector2d.unitVector(direction));
                 if (newPosition.y() < 0 || newPosition.y() >= mapSettings.height()) {
@@ -74,6 +73,7 @@ public class WorldMap {
                 }
                 newPositions.put(newPosition, animal);
                 animalCollection.remove(animal);
+                animal.turn();
             }
         });
         animalMap.putAll(newPositions);
@@ -111,13 +111,15 @@ public class WorldMap {
 
     public void growPlants(int numOfPlants) {
         for (int grown = 0;
-             grown < Math.min(numOfPlants, mapSettings.width() * mapSettings.height() - mapStats.getNumOfPlants());
+             grown < Math.min(numOfPlants,
+                     mapSettings.width() * mapSettings.height() - mapStats.getNumOfPlants());
              grown++
         ) {
             Vector2d position;
             double draw = Math.random() * 10.0;
             if (draw < 8.0) {
-                do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                do position = mapSettings.plantGrowthVariant()
+                        .choosePreferredPosition(mapSettings, this);
                 while (plantPositions.contains(position));
             } else {
                 final int MAX_ITERATIONS = mapSettings.width() * mapSettings.height() * 4;
@@ -127,7 +129,8 @@ public class WorldMap {
                 int i = 0;
                 do {
                     if (i == MAX_ITERATIONS) {
-                        do position = mapSettings.plantGrowthVariant().choosePreferredPosition(mapSettings, this);
+                        do position = mapSettings.plantGrowthVariant()
+                                .choosePreferredPosition(mapSettings, this);
                         while (plantPositions.contains(position));
                         break;
                     }
@@ -143,7 +146,7 @@ public class WorldMap {
     public void visualize() { // TODO
     }
 
-    public void updateStats() { // TODO: coś tu trzeba będzie pewnie jeszcze dokończyć
+    public void updateStats() {
         mapStats.dailyEnergyUpdate();
         mapStats.dailyPlantsUpdate();
         mapStats.updateNumOfFreeFields();
@@ -151,11 +154,6 @@ public class WorldMap {
             for (Animal animal : animalCollection)
                 animal.updateAge();
         });
-    }
-
-    private boolean isLegal(Vector2d position){
-        return position.x() >= 0 && position.x() < mapSettings.width() &&
-                position.y() >= 0 && position.y() < mapSettings.height();
     }
 
     public Set<Vector2d> getPlantPositions() {

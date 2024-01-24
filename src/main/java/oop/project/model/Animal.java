@@ -1,33 +1,32 @@
 package oop.project.model;
 
 import oop.project.Settings.AnimalSettings;
-import oop.project.Statistics.AnimalStats;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Animal {
     private final AnimalSettings animalSettings;
-    private final AnimalStats animalStats;
     private int direction;
     private final List<Integer> genome;
     private int activatedGene;
     private int energy;
+    private int numOfPlantsEaten;
     private int age;
-    private int birthday;
+    private final int birthday;
     private final List<Animal> children;
-    private Optional<Animal> parent1;
-    private Optional<Animal> parent2;
+    private final Optional<Animal> parent1;
+    private final Optional<Animal> parent2;
     private List<Animal> descendants;
 
     // Kolejne pokolenia
     public Animal(AnimalSettings animalSettings, List<Integer> genome, Animal parent1, Animal parent2, int birthday) {
-        animalStats = new AnimalStats();
         this.animalSettings = animalSettings;
         direction = (int) Math.floor(Math.random() * 7);
         this.genome = genome;
         activatedGene = (int) Math.floor(Math.random() * animalSettings.genomeLength());
         energy = 2 * animalSettings.breedingEnergy();
+        numOfPlantsEaten = 0;
         age = 0;
         this.birthday = birthday;
         children = new ArrayList<>();
@@ -60,6 +59,7 @@ public class Animal {
 
     public void eat() {
         energy += animalSettings.eatingEnergy();
+        numOfPlantsEaten++;
     }
 
     public Animal mateWith(Animal weakerPartner, int birthday) {
@@ -86,10 +86,17 @@ public class Animal {
         parent2.ifPresent(animal -> animal.reattachDescendants(this));
     }
 
-    public void reattachDescendants(Animal deadChild) {
+    void reattachDescendants(Animal deadChild) {
         descendants.addAll(deadChild.getChildren());
         descendants.remove(deadChild);
         children.remove(deadChild);
+    }
+
+    public int getNumOfLivingDescendants() {
+        if (descendants.isEmpty()) return 0;
+        return descendants.stream()
+                .map(Animal::getNumOfLivingDescendants)
+                .reduce(descendants.size(), Integer::sum);
     }
 
     public int getDirection() {
@@ -104,12 +111,22 @@ public class Animal {
         return energy;
     }
 
+    public int getNumOfPlantsEaten() {
+        return numOfPlantsEaten;
+    }
+
     public int getAge() {
         return age;
     }
 
     public void updateAge() {
         age++;
+    }
+
+    public int getDeathDate() {
+        if (energy > 0)
+            throw new IllegalStateException("Zwierzę nadal żyje!");
+        return birthday + age;
     }
 
     public List<Animal> getChildren() {
