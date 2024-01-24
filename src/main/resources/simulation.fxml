@@ -13,7 +13,7 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.text.Font?>
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            minHeight="550.0" minWidth="500.0" fx:controller="oop.project.Interface.SimulationController">
+            minHeight="600.0" minWidth="500.0" fx:controller="oop.project.Interface.SimulationController">
 
     <left>
         <Pane prefWidth="55.0"/>
@@ -56,6 +56,11 @@
                     <Slider fx:id="numberOfDailyAddedPlantsSlider" max="200.0" value="5.0"/>
                     <Label fx:id="numberOfDailyAddedPlantsLabel" text="5"/>
                 </HBox>
+                <Label text="Duration of day[ms]"/>
+                <HBox>
+                    <Slider fx:id="durationOfDaySlider" max="1000.0" min="100.0" value="300.0"/>
+                    <Label fx:id="durationOfDayLabel" text="300"/>
+                </HBox>
             </VBox>
 
             <!-- Second HBox with 7 VBoxes -->
@@ -94,6 +99,10 @@
                 <HBox>
                     <Slider fx:id="maximumNumberOfMutationSlider" max="10.0" value="8.0"/>
                     <Label fx:id="maximumNumberOfMutationLabel" text="8"/>
+                </HBox>
+                <Label text="Do you want to save the stats?"/>
+                <HBox>
+                    <ListView fx:id="doYouWantToSaveTheStatsListView" orientation="VERTICAL" prefHeight="50.0" prefWidth="180.0"/>
                 </HBox>
             </VBox>
         </HBox>

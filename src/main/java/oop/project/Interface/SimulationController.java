@@ -5,7 +5,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -15,6 +18,7 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.stage.Stage;
 import oop.project.Settings.SettingsBuilder;
 import oop.project.Settings.MutationVariant;
 import oop.project.Settings.PlantGrowthVariant;
@@ -72,6 +76,10 @@ public class SimulationController implements Initializable {
     @FXML
     public Label maximumNumberOfMutationLabel;
     @FXML
+    public ListView<String> doYouWantToSaveTheStatsListView;
+    public Slider durationOfDaySlider;
+    public Label durationOfDayLabel;
+    @FXML
     private ListView<String> plantGrowthListView;
     @FXML
     private ListView<String> MutationListView;
@@ -79,19 +87,22 @@ public class SimulationController implements Initializable {
     int mapWidth;
     String plantsGrowthVariant;
     String mutationVariant;
+    String doYouWantToSaveTheStats;
     int startingNumberOfAnimals;
     int startingNumberOfPlants;
     int numberOfDailyAddedPlants;
     int startingAnimalEnergy;
     int amountOfEnergyFromEating;
-    int energyNeededToReproduce;
+    int energyNeededToReproduce = 30;
     int energyGivenToOffspring;
     int lengthOfGenes;
     int minimumNumberOfMutations;
     int maximumNumberOfMutations;
-
+    int durationOfDay = 300;
     String[] plantsGrowthToChoose = {"forested equator", "moving jungle"};
     String[] mutationsToChoose = {"complete random", "small correction"};
+    String[] doYouWantToSaveTheStatsToChoose = {"Yes", "No"};
+
 
 
     public void startButtonClicked(ActionEvent actionEvent) {
@@ -111,6 +122,16 @@ public class SimulationController implements Initializable {
         System.out.println(maximumNumberOfMutations);
         System.out.println(plantsGrowthVariant);
         System.out.println(mutationVariant);
+        System.out.println(durationOfDay);
+
+        boolean doYouWantToSaveStatsBool;
+        if (Objects.equals(doYouWantToSaveTheStats, "Yes")) {
+            doYouWantToSaveStatsBool = true;
+        } else {
+            doYouWantToSaveStatsBool = false;
+        }
+
+        System.out.println(doYouWantToSaveStatsBool);
 
         SettingsBuilder builder = new SettingsBuilder();
 
@@ -142,6 +163,7 @@ public class SimulationController implements Initializable {
         builder.setGenomeLength(lengthOfGenes);
         builder.setMinMutations(minimumNumberOfMutations);
         builder.setMaxMutations(maximumNumberOfMutations);
+        builder.setDurationOfDays(durationOfDay);
 
         System.out.println("builder stworzony!");
 
@@ -150,12 +172,7 @@ public class SimulationController implements Initializable {
                 builder.buildAnimalSettings()
         );
 
-
-//        TODO
-//        Application.launch(SomeNewSimulationApp.class);
-
-
-
+        openSimulationVisStage();
 
     }
 
@@ -221,6 +238,8 @@ public class SimulationController implements Initializable {
                     setMaximumNumberOfMutations(lengthOfGenes);
                 } else setMaximumNumberOfMutations(Math.max(value, minimumNumberOfMutations));
                 break;
+            case 13:
+                setDurationOfDay(value);
         }
     }
 
@@ -252,6 +271,7 @@ public class SimulationController implements Initializable {
         setupDefaultValues(LengthOfGenesSlider,  10);
         setupDefaultValues(minimumNumberOfMutationSlider, 11);
         setupDefaultValues(maximumNumberOfMutationSlider, 12);
+        setupDefaultValues(durationOfDaySlider, 13);
 
         setupSlider(heightSlider, heightLabel, 1);
         setupSlider(widthSlider, widthLabel, 2);
@@ -265,15 +285,25 @@ public class SimulationController implements Initializable {
         setupSlider(LengthOfGenesSlider, LengthOfGenesLabel, 10);
         setupSlider(minimumNumberOfMutationSlider, minimumNumberOfMutationLabel, 11);
         setupSlider(maximumNumberOfMutationSlider, maximumNumberOfMutationLabel, 12);
+        setupSlider(durationOfDaySlider, durationOfDayLabel, 13);
 
         plantGrowthListView.getItems().addAll(plantsGrowthToChoose);
         MutationListView.getItems().addAll(mutationsToChoose);
+        doYouWantToSaveTheStatsListView.getItems().addAll(doYouWantToSaveTheStatsToChoose);
 
         plantGrowthListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 plantsGrowthVariant = plantGrowthListView.getSelectionModel().getSelectedItem());
 
         MutationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 mutationVariant = MutationListView.getSelectionModel().getSelectedItem());
+
+        doYouWantToSaveTheStatsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                doYouWantToSaveTheStats = doYouWantToSaveTheStatsListView.getSelectionModel().getSelectedItem());
+
+
+        plantGrowthListView.getSelectionModel().select(1);
+        MutationListView.getSelectionModel().select(1);
+        doYouWantToSaveTheStatsListView.getSelectionModel().select(1);
 
     }
 
@@ -325,6 +355,31 @@ public class SimulationController implements Initializable {
 
     public void setMaximumNumberOfMutations(int maximumNumberOfMutations) {
         this.maximumNumberOfMutations = maximumNumberOfMutations;
+    }
+    public void setDurationOfDay(int durationOfDay) {
+        this.durationOfDay = durationOfDay;
+    }
+
+
+    public void openSimulationVisStage() {
+        try {
+            System.out.println("printuje klasse przy FXMLLoaderze: ");
+            System.out.println(getClass());
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("simulationVis.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Simulation Visualization");
+
+            // Set the scene with the loaded FXML content
+            stage.setScene(new Scene(root));
+
+            // Show the new stage
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.toString());
+        }
     }
 
 }
