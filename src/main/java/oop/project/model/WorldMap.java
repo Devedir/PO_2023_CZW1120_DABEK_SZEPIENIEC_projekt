@@ -31,15 +31,9 @@ public class WorldMap {
     private void placeInitialAnimals() {
         for (int i = 0; i < mapSettings.initialNumOfAnimals(); i++) {
             Animal newAnimal = new Animal(animalSettings);
-            placeAnimal(randomLegalPosition(), newAnimal);
+            animalMap.put(randomLegalPosition(), newAnimal);
             mapStats.updateAnimals(1, newAnimal);
         }
-    }
-
-    public void placeAnimal(Vector2d position, Animal newAnimal) {
-        if (!isLegal(position))
-            throw new IllegalArgumentException("Nieprawidłowa pozycja: " + position);
-        animalMap.put(position, newAnimal);
     }
 
     public Vector2d randomLegalPosition() {
@@ -56,6 +50,7 @@ public class WorldMap {
                 Animal animal = iterator.next();
                 if (animal.getEnergy() == 0) {
                     animal.die();
+                    mapStats.deathUpdate(animal);
                     iterator.remove();
                 }
             }
@@ -94,6 +89,7 @@ public class WorldMap {
                 continue;
             Animal strongest = animalMap.get(plantPosition).get(0);
             strongest.eat();
+            mapStats.eatingUpdate();
             iterator.remove();
         }
     }
@@ -107,6 +103,7 @@ public class WorldMap {
                     break;
                 Animal baby = animalList.get(i - 1).mateWith(animalList.get(i), birthday);
                 newborns.put(position, baby);
+                mapStats.breedingUpdate(baby);
             }
         });
         animalMap.putAll(newborns);
@@ -149,6 +146,7 @@ public class WorldMap {
     public void updateStats() { // TODO: coś tu trzeba będzie pewnie jeszcze dokończyć
         mapStats.dailyEnergyUpdate();
         mapStats.dailyPlantsUpdate();
+        mapStats.updateNumOfFreeFields();
         animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection)
                 animal.updateAge();

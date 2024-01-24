@@ -30,8 +30,8 @@ public class MapStats {
         energySum = numOfAnimals * animalSettings.initialEnergy();
         lifespanSum = 0;
         numOfChildrenSum = 0;
-        updateNumOfFreeFields();
         genomeCounter = new HashMap<>();
+        updateNumOfFreeFields();
     }
 
     public void updateNumOfFreeFields() {
