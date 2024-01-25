@@ -1,5 +1,6 @@
 package oop.project.model;
 
+import oop.project.Interface.SimulationVisController;
 import oop.project.Settings.AnimalSettings;
 
 import java.util.*;
@@ -14,31 +15,34 @@ public class Animal {
     private int numOfPlantsEaten;
     private int age;
     private final int birthday;
-    private final List<Animal> children;
+    private int numOfAllChildren;
     private final Optional<Animal> parent1;
     private final Optional<Animal> parent2;
-    private List<Animal> descendants;
+    private final List<Animal> descendants;
+    private Optional<SimulationVisController> tracker;
 
     // Kolejne pokolenia
     public Animal(AnimalSettings animalSettings, List<Integer> genome, Animal parent1, Animal parent2, int birthday) {
         this.animalSettings = animalSettings;
-        direction = (int) Math.floor(Math.random() * 7);
+        direction = (int) (Math.random() * 8);
         this.genome = genome;
-        activatedGene = (int) Math.floor(Math.random() * animalSettings.genomeLength());
+        activatedGene = (int) (Math.random() * animalSettings.genomeLength());
         energy = 2 * animalSettings.breedingEnergy();
         numOfPlantsEaten = 0;
         age = 0;
         this.birthday = birthday;
-        children = new ArrayList<>();
+        descendants = new ArrayList<>();
+        numOfAllChildren = 0;
         this.parent1 = parent1 == null ?
                 Optional.empty() : Optional.of(parent1);
         this.parent2 = parent2 == null ?
                 Optional.empty() : Optional.of(parent2);
+        tracker = Optional.empty();
     }
 
     // Adam i Ewa
     public Animal(AnimalSettings animalSettings) {
-        this(animalSettings, new Random().ints(0, 7)
+        this(animalSettings, new Random().ints(0, 8)
                                 .boxed()
                                 .limit(animalSettings.genomeLength())
                                 .collect(Collectors.toList()),
@@ -55,6 +59,7 @@ public class Animal {
     // Używane przy brzegu mapy
     public void bounce() {
         direction = (direction + 4) % 8;
+        energy--;
     }
 
     public void eat() {
@@ -63,7 +68,7 @@ public class Animal {
     }
 
     public Animal mateWith(Animal weakerPartner, int birthday) {
-        double cuttingPercentage = (double) weakerPartner.getEnergy() / energy;
+        double cuttingPercentage = (double) energy / (energy + weakerPartner.getEnergy());
         int numOfStrongerGenes = (int) Math.ceil(genome.size() * cuttingPercentage);
         List<Integer> newGenome = new ArrayList<>();
         if (Math.random() < 0.5) { // strona lewa
@@ -76,7 +81,7 @@ public class Animal {
         }
         animalSettings.mutationVariant().mutateGenome(newGenome, animalSettings);
         Animal child = new Animal(animalSettings, newGenome, this, weakerPartner, birthday);
-        children.add(child);
+        numOfAllChildren++;
         descendants.add(child);
         return child;
     }
@@ -87,9 +92,8 @@ public class Animal {
     }
 
     void reattachDescendants(Animal deadChild) {
-        descendants.addAll(deadChild.getChildren());
+        descendants.addAll(deadChild.getDescendants());
         descendants.remove(deadChild);
-        children.remove(deadChild);
     }
 
     public int getNumOfLivingDescendants() {
@@ -129,8 +133,16 @@ public class Animal {
         return birthday + age;
     }
 
-    public List<Animal> getChildren() {
-        return children;
+    public int getNumOfChildren() {
+        return numOfAllChildren;
+    }
+
+    public List<Animal> getDescendants() {
+        return descendants;
+    }
+
+    public void setTracker(SimulationVisController tracker) {
+        this.tracker = tracker == null ? Optional.empty() : Optional.of(tracker);
     }
 
     @Override
@@ -139,11 +151,11 @@ public class Animal {
         if (o == null || getClass() != o.getClass()) return false;
         Animal animal = (Animal) o;
         return energy == animal.getEnergy() && age == animal.getAge()
-                && getChildren().size() == animal.getChildren().size();
+                && numOfAllChildren == animal.getNumOfChildren();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEnergy(), getAge(), getChildren().size());
+        return Objects.hash(getEnergy(), getAge(), getNumOfChildren());
     }
 }

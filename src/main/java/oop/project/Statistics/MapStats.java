@@ -25,9 +25,9 @@ public class MapStats {
         this.mapSettings = mapSettings;
         this.animalSettings = animalSettings;
         this.worldMap = worldMap;
-        numOfAnimals = mapSettings.initialNumOfAnimals();
+        numOfAnimals = 0;
         numOfPlants = mapSettings.initialNumOfPlants();
-        energySum = numOfAnimals * animalSettings.initialEnergy();
+        energySum = mapSettings.initialNumOfAnimals() * animalSettings.initialEnergy();
         lifespanSum = 0;
         numOfChildrenSum = 0;
         genomeCounter = new HashMap<>();
@@ -61,7 +61,7 @@ public class MapStats {
         updateAnimals(-1, deadAnimal);
         numOfDeadAnimals++;
         lifespanSum += deadAnimal.getAge();
-        numOfChildrenSum -= deadAnimal.getChildren().size();
+        numOfChildrenSum -= deadAnimal.getNumOfChildren();
     }
 
     public void eatingUpdate() {
@@ -69,8 +69,8 @@ public class MapStats {
         energySum += animalSettings.eatingEnergy();
     }
 
-    public void dailyPlantsUpdate() {
-        numOfPlants += mapSettings.dailyGrowth();
+    public void addPlant() {
+        numOfPlants++;
     }
 
     public void dailyEnergyUpdate() {
@@ -116,5 +116,25 @@ public class MapStats {
     public OptionalDouble getAverageNumOfChildren() {
         return numOfAnimals == 0 ?
                 OptionalDouble.empty() : OptionalDouble.of((double) numOfChildrenSum / numOfAnimals);
+    }
+
+    public List<Vector2d> getMostPopularGenomePositions(){
+        List<Vector2d> listOfPositions = new ArrayList<>();
+        Optional<List<Integer>> mostPopularGenomeOptional = getMostPopularGenome();
+        if (mostPopularGenomeOptional.isEmpty()) {
+            return listOfPositions;
+        }else {
+            List<Integer> mostPopularGenome = mostPopularGenomeOptional.get();
+            for (Vector2d position : worldMap.getAnimalMap().keySet()) {
+                Collection<Animal> animalsAtPosition = worldMap.getAnimalMap().get(position);
+                for (Animal animal : animalsAtPosition) {
+                    if (animal.getGenome().equals(mostPopularGenome)) {
+                        listOfPositions.add(position);
+                        break;
+                    }
+                }
+            }
+            return listOfPositions;
+        }
     }
 }

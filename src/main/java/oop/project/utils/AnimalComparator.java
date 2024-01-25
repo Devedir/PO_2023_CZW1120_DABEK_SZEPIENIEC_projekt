@@ -11,7 +11,7 @@ public class AnimalComparator implements Comparator<Animal> {
         if (result != 0) return result;
         result = Integer.compare(a1.getAge(), a2.getAge());
         if (result != 0) return result;
-        result = Integer.compare(a1.getChildren().size(), a2.getChildren().size());
+        result = Integer.compare(a1.getNumOfChildren(), a2.getNumOfChildren());
         return result;
     }
 }

@@ -21,7 +21,13 @@ public enum MutationVariant {
         else
             for (int index : indices) {
                 int change = Math.random() < 0.5 ? -1 : 1;
-                genome.set(index, genome.get(index) + change);
+                int val = genome.get(index) + change;
+                int newGene = switch (val) {
+                    case -1 -> 7;
+                    case 8 -> 0;
+                    default -> val;
+                };
+                genome.set(index, newGene);
             }
     }
 }
