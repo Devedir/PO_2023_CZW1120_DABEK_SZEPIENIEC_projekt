@@ -12,13 +12,13 @@ public class Simulation implements Runnable {
     private int day;
     private boolean isPaused = false;
     private boolean statsSaved;
-    private final File file;
+    private final String filename;
 
     public Simulation(MapSettings mapSettings, AnimalSettings animalSettings, boolean areStatsSaved, int id) {
         this.mapSettings = mapSettings;
         worldMap = new WorldMap(mapSettings, animalSettings);
         statsSaved = areStatsSaved;
-        this.file = new File("savedStats/data"+id+".csv");
+        filename = "savedStats/data"+id+".csv";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Simulation implements Runnable {
             worldMap.eatPlants();
             worldMap.breedAnimals(day);
             worldMap.growPlants(mapSettings.dailyGrowth());
-            worldMap.updateStats(statsSaved, file);
+            worldMap.updateStats(statsSaved, filename);
             worldMap.visualize();
 
             while (isPaused) {

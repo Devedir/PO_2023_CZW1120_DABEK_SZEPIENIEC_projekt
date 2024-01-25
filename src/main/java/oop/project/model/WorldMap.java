@@ -159,7 +159,7 @@ public class WorldMap {
         controller.drawScene();
     }
 
-    public void updateStats(boolean statsSaved, File file) {
+    public void updateStats(boolean statsSaved, String file) {
         mapStats.dailyEnergyUpdate();
         mapStats.updateNumOfFreeFields();
         animalMap.asMap().forEach((position, animalCollection) -> {
