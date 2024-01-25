@@ -2,22 +2,25 @@ package oop.project.model;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import oop.project.Interface.SimulationVisController;
 import oop.project.Settings.AnimalSettings;
 import oop.project.Settings.MapSettings;
 import oop.project.Statistics.MapStats;
 import oop.project.utils.AnimalComparator;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+import java.util.*;
 
 public class WorldMap {
     private final MapSettings mapSettings;
     private final AnimalSettings animalSettings;
     private final MapStats mapStats;
-    private final ListMultimap<Vector2d, Animal> animalMap; // Oparte na liście, bo chcę sortować
+    private final ListMultimap<Vector2d, Animal> animalMap;
     private final Set<Vector2d> plantPositions;
+    private SimulationVisController controller;
+
     public WorldMap(MapSettings mapSettings, AnimalSettings animalSettings) {
         this.mapSettings = mapSettings;
         this.animalSettings = animalSettings;
@@ -44,21 +47,25 @@ public class WorldMap {
     }
 
     public void removeDeadAnimals() {
+        ListMultimap<Vector2d, Animal> toRemove = ArrayListMultimap.create();
         animalMap.asMap().forEach((position, animalCollection) -> {
-            Iterator<Animal> iterator = animalCollection.iterator();
-            while (iterator.hasNext()) {
-                Animal animal = iterator.next();
-                if (animal.getEnergy() == 0) {
+            for (Animal animal : animalCollection) {
+                if (animal.getEnergy() <= 0) {
                     animal.die();
                     mapStats.deathUpdate(animal);
-                    iterator.remove();
+                    toRemove.put(position, animal);
                 }
             }
+        });
+        toRemove.asMap().forEach((position, animalCollection) -> {
+            for (Animal animal : animalCollection)
+                animalMap.remove(position, animal);
         });
     }
 
     public void moveAllAnimals() {
         ListMultimap<Vector2d, Animal> newPositions = ArrayListMultimap.create();
+        ListMultimap<Vector2d, Animal> oldPositions = ArrayListMultimap.create();
         animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection) {
                 int direction = animal.getDirection();
@@ -72,13 +79,17 @@ public class WorldMap {
                     newPosition = new Vector2d(0, newPosition.y());
                 }
                 newPositions.put(newPosition, animal);
-                animalCollection.remove(animal);
+                oldPositions.put(position, animal);
                 animal.turn();
             }
         });
         animalMap.putAll(newPositions);
+        oldPositions.asMap().forEach((position, animalCollection) -> {
+            for (Animal animal : animalCollection)
+                animalMap.remove(position, animal);
+        });
         for (Vector2d key : animalMap.keySet())
-            animalMap.get(key).sort(new AnimalComparator());
+            animalMap.get(key).sort(Collections.reverseOrder(new AnimalComparator()));
     }
 
     public void eatPlants() {
@@ -99,7 +110,7 @@ public class WorldMap {
         animalMap.asMap().forEach((position, animalCollection) -> {
             List<Animal> animalList = animalCollection.stream().toList();
             for (int i = 1; i < animalList.size(); i += 2) {
-                if (animalList.get(i).getEnergy() < animalSettings.breedingEnergy())
+                if (animalList.get(i).getEnergy() < animalSettings.breedableEnergy())
                     break;
                 Animal baby = animalList.get(i - 1).mateWith(animalList.get(i), birthday);
                 newborns.put(position, baby);
@@ -140,20 +151,40 @@ public class WorldMap {
                         || mapSettings.plantGrowthVariant().isPreferred(position, plantPositions, mapSettings));
             }
             plantPositions.add(position);
+            mapStats.addPlant();
         }
     }
 
-    public void visualize() { // TODO
+    public void visualize() {
+        controller.drawScene();
     }
 
-    public void updateStats() {
+    public void updateStats(boolean statsSaved, File file) {
         mapStats.dailyEnergyUpdate();
-        mapStats.dailyPlantsUpdate();
         mapStats.updateNumOfFreeFields();
         animalMap.asMap().forEach((position, animalCollection) -> {
             for (Animal animal : animalCollection)
                 animal.updateAge();
         });
+
+        if (!statsSaved) return;
+        try (FileWriter writer = new FileWriter(file, true)) {
+            writer.write(mapStats.getNumOfAnimals() + ",");
+            writer.write(mapStats.getNumOfPlants() + ",");
+            writer.write(mapStats.getNumOfFreeFields() + ",");
+            Optional<List<Integer>> MPG = mapStats.getMostPopularGenome();
+            writer.write((MPG.isPresent() ? MPG.get().toString() : "-") + ",");
+            OptionalDouble avgEnergy = mapStats.getAverageEnergy();
+            writer.write((avgEnergy.isPresent() ? Double.toString(avgEnergy.getAsDouble()) : "-") + ",");
+            OptionalDouble avgLS = mapStats.getAverageLifespan();
+            writer.write((avgLS.isPresent() ? Double.toString(avgLS.getAsDouble()) : "-") + ",");
+            OptionalDouble avgNOC = mapStats.getAverageNumOfChildren();
+            writer.write(avgNOC.isPresent() ? Double.toString(avgNOC.getAsDouble()) : "-");
+            writer.write(System.lineSeparator());
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Set<Vector2d> getPlantPositions() {
@@ -162,5 +193,31 @@ public class WorldMap {
 
     public ListMultimap<Vector2d, Animal> getAnimalMap() {
         return animalMap;
+    }
+
+    public MapStats getMapStats() {
+        return mapStats;
+    }
+
+    public MapSettings getMapSettings() {
+        return mapSettings;
+    }
+
+    public boolean isAnimalAt (int x, int y) {
+        Vector2d vector = new Vector2d(x, y);
+        return animalMap.containsKey(vector);
+    }
+
+    public int getAnimalEnergyAtPosition(int x, int y) {
+        Vector2d vector = new Vector2d(x, y);
+        return animalMap.get(vector).get(0).getEnergy();
+    }
+
+    public AnimalSettings getAnimalSettings() {
+        return animalSettings;
+    }
+
+    public void setController(SimulationVisController controller) {
+        this.controller = controller;
     }
 }

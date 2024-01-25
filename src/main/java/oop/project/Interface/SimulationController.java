@@ -1,8 +1,5 @@
 package oop.project.Interface;
 
-import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,11 +15,13 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import oop.project.Settings.SettingsBuilder;
 import oop.project.Settings.MutationVariant;
 import oop.project.Settings.PlantGrowthVariant;
 import oop.project.Simulation;
+import oop.project.model.WorldMap;
 
 public class SimulationController implements Initializable {
     @FXML
@@ -76,80 +75,47 @@ public class SimulationController implements Initializable {
     @FXML
     public Label maximumNumberOfMutationLabel;
     @FXML
-    public ListView<String> doYouWantToSaveTheStatsListView;
+    public ListView<String> areStatsSavedListView;
+    @FXML
     public Slider durationOfDaySlider;
     public Label durationOfDayLabel;
     @FXML
     private ListView<String> plantGrowthListView;
     @FXML
     private ListView<String> MutationListView;
-    int mapHeight;
-    int mapWidth;
-    String plantsGrowthVariant;
-    String mutationVariant;
-    String doYouWantToSaveTheStats;
-    int startingNumberOfAnimals;
-    int startingNumberOfPlants;
-    int numberOfDailyAddedPlants;
-    int startingAnimalEnergy;
-    int amountOfEnergyFromEating;
-    int energyNeededToReproduce = 30;
-    int energyGivenToOffspring;
-    int lengthOfGenes;
-    int minimumNumberOfMutations;
-    int maximumNumberOfMutations;
-    int durationOfDay = 300;
-    String[] plantsGrowthToChoose = {"forested equator", "moving jungle"};
-    String[] mutationsToChoose = {"complete random", "small correction"};
-    String[] doYouWantToSaveTheStatsToChoose = {"Yes", "No"};
-
-
+    private int mapHeight;
+    private int mapWidth;
+    private String plantsGrowthVariant;
+    private String mutationVariant;
+    private String doYouWantToSaveTheStats;
+    private int startingNumberOfAnimals;
+    private int startingNumberOfPlants;
+    private int numberOfDailyAddedPlants;
+    private int startingAnimalEnergy;
+    private int amountOfEnergyFromEating;
+    private int energyNeededToReproduce = 30;
+    private int energyGivenToOffspring;
+    private int lengthOfGenes;
+    private int minimumNumberOfMutations;
+    private int maximumNumberOfMutations;
+    private int durationOfDay = 300;
+    private String[] plantsGrowthToChoose = {"forested equator", "moving jungle"};
+    private String[] mutationsToChoose = {"complete random", "small correction"};
+    private String[] areStatsSavedToChoose = {"Yes", "No"};
 
     public void startButtonClicked(ActionEvent actionEvent) {
-
-        System.out.println("button START clicked");
-        System.out.println(mapHeight);
-        System.out.println(mapWidth);
-        System.out.println(startingNumberOfAnimals);
-        System.out.println(startingNumberOfPlants);
-        System.out.println(numberOfDailyAddedPlants);
-        System.out.println(startingAnimalEnergy);
-        System.out.println(amountOfEnergyFromEating);
-        System.out.println(energyNeededToReproduce);
-        System.out.println(energyGivenToOffspring);
-        System.out.println(lengthOfGenes);
-        System.out.println(minimumNumberOfMutations);
-        System.out.println(maximumNumberOfMutations);
-        System.out.println(plantsGrowthVariant);
-        System.out.println(mutationVariant);
-        System.out.println(durationOfDay);
-
-        boolean doYouWantToSaveStatsBool;
-        if (Objects.equals(doYouWantToSaveTheStats, "Yes")) {
-            doYouWantToSaveStatsBool = true;
-        } else {
-            doYouWantToSaveStatsBool = false;
-        }
-
-        System.out.println(doYouWantToSaveStatsBool);
+        boolean doYouWantToSaveStatsBool = Objects.equals(doYouWantToSaveTheStats, "Yes");
 
         SettingsBuilder builder = new SettingsBuilder();
 
         builder.setHeight(mapHeight);
         builder.setWidth(mapWidth);
 
-        PlantGrowthVariant plantsGrowthVariantConverted;
-        if (Objects.equals(plantsGrowthVariant, "forested equator")) {
-            plantsGrowthVariantConverted = PlantGrowthVariant.EQUATOR;
-        } else {
-            plantsGrowthVariantConverted = PlantGrowthVariant.JUNGLE;
-        }
-        MutationVariant mutationVariantConverted;
-        if (Objects.equals(mutationVariant, "complete random")) {
-            mutationVariantConverted = MutationVariant.FULLY_RANDOM;
-        } else {
-            mutationVariantConverted = MutationVariant.SLIGHT_CORRECTION;
-        }
+        PlantGrowthVariant plantsGrowthVariantConverted = Objects.equals(plantsGrowthVariant, "forested equator") ?
+                PlantGrowthVariant.EQUATOR : PlantGrowthVariant.JUNGLE;
+        MutationVariant mutationVariantConverted = Objects.equals(mutationVariant, "complete random") ?
+                MutationVariant.FULLY_RANDOM : MutationVariant.SLIGHT_CORRECTION;
+
         builder.setPlantGrowthVariant(plantsGrowthVariantConverted);
         builder.setMutationVariant(mutationVariantConverted);
 
@@ -165,15 +131,14 @@ public class SimulationController implements Initializable {
         builder.setMaxMutations(maximumNumberOfMutations);
         builder.setDurationOfDays(durationOfDay);
 
-        System.out.println("builder stworzony!");
-
         Simulation simulation = new Simulation(
                 builder.buildMapSettings(),
-                builder.buildAnimalSettings()
+                builder.buildAnimalSettings(),
+                doYouWantToSaveStatsBool,
+                1
         );
 
-        openSimulationVisStage();
-
+        openSimulationVisStage(simulation, simulation.getWorldMap());
     }
 
 
@@ -205,7 +170,6 @@ public class SimulationController implements Initializable {
                 setAmountOfEnergyFromEating(value);
                 break;
             case 8:
-                // mozliwe, że jakiś błąd -> przy jednym teście wstawił mi w energyGivenToOffspriong -1
                 if (energyNeededToReproduce <= value) {
                     setEnergyGivenToOffspring(energyNeededToReproduce-1);
                 } else {
@@ -289,7 +253,7 @@ public class SimulationController implements Initializable {
 
         plantGrowthListView.getItems().addAll(plantsGrowthToChoose);
         MutationListView.getItems().addAll(mutationsToChoose);
-        doYouWantToSaveTheStatsListView.getItems().addAll(doYouWantToSaveTheStatsToChoose);
+        areStatsSavedListView.getItems().addAll(areStatsSavedToChoose);
 
         plantGrowthListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 plantsGrowthVariant = plantGrowthListView.getSelectionModel().getSelectedItem());
@@ -297,14 +261,13 @@ public class SimulationController implements Initializable {
         MutationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 mutationVariant = MutationListView.getSelectionModel().getSelectedItem());
 
-        doYouWantToSaveTheStatsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                doYouWantToSaveTheStats = doYouWantToSaveTheStatsListView.getSelectionModel().getSelectedItem());
+        areStatsSavedListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                doYouWantToSaveTheStats = areStatsSavedListView.getSelectionModel().getSelectedItem());
 
 
         plantGrowthListView.getSelectionModel().select(1);
         MutationListView.getSelectionModel().select(1);
-        doYouWantToSaveTheStatsListView.getSelectionModel().select(1);
-
+        areStatsSavedListView.getSelectionModel().select(1);
     }
 
 
@@ -361,25 +324,37 @@ public class SimulationController implements Initializable {
     }
 
 
-    public void openSimulationVisStage() {
+    public void openSimulationVisStage(Simulation simulation, WorldMap worldMap) {
         try {
-            System.out.println("printuje klasse przy FXMLLoaderze: ");
-            System.out.println(getClass());
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("simulationVis.fxml"));
-            Parent root = fxmlLoader.load();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getClassLoader().getResource("simulationVis.fxml"));
+            Parent root = loader.load();
+
+            SimulationVisController presenter = loader.getController();
+            worldMap.setController(presenter);
+            presenter.setWorldMap(worldMap);
+            presenter.setSimulation(simulation);
 
             Stage stage = new Stage();
             stage.setTitle("Simulation Visualization");
 
-            // Set the scene with the loaded FXML content
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            scene.setOnKeyPressed(keyEvent -> {
+                if (Objects.equals(KeyCode.ESCAPE, keyEvent.getCode()))
+                    presenter.untrack();
+            });
+            stage.setScene(scene);
 
-            // Show the new stage
             stage.show();
+            presenter.setWidth(stage.getWidth());
+            stage.widthProperty().addListener(
+                    (observable, oldWidth, newWidth) -> presenter.setWidth((Double) newWidth));
+            presenter.setHeight(stage.getHeight());
+            stage.heightProperty().addListener(
+                    (observable, oldHeight, newHeight) -> presenter.setHeight((Double) newHeight));
+            presenter.runSimulation();
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(e.toString());
         }
     }
-
 }

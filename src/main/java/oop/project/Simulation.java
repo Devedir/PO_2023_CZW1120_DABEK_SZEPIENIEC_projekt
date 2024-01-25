@@ -4,14 +4,21 @@ import oop.project.Settings.AnimalSettings;
 import oop.project.Settings.MapSettings;
 import oop.project.model.WorldMap;
 
-public class Simulation implements Runnable { // TODO
+import java.io.File;
+
+public class Simulation implements Runnable {
     private final WorldMap worldMap;
     private final MapSettings mapSettings;
     private int day;
+    private boolean isPaused = false;
+    private boolean statsSaved;
+    private final File file;
 
-    public Simulation(MapSettings mapSettings, AnimalSettings animalSettings) {
+    public Simulation(MapSettings mapSettings, AnimalSettings animalSettings, boolean areStatsSaved, int id) {
         this.mapSettings = mapSettings;
         worldMap = new WorldMap(mapSettings, animalSettings);
+        statsSaved = areStatsSaved;
+        this.file = new File("savedStats/data"+id+".csv");
     }
 
     @Override
@@ -19,14 +26,24 @@ public class Simulation implements Runnable { // TODO
         System.out.println("Start!");
         day = 1;
         worldMap.visualize();
-        while (day < 10) { // Warunek tymczasowy
+        while (worldMap.getMapStats().getNumOfAnimals() > 0) {
             worldMap.removeDeadAnimals();
             worldMap.moveAllAnimals();
             worldMap.eatPlants();
             worldMap.breedAnimals(day);
             worldMap.growPlants(mapSettings.dailyGrowth());
-            worldMap.updateStats();
+            worldMap.updateStats(statsSaved, file);
             worldMap.visualize();
+
+            while (isPaused) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    System.err.println("Symulacja przerwana: " + e.getMessage());
+                }
+            }
+
+
             try {
                 Thread.sleep(mapSettings.durationOfDay());
             } catch (InterruptedException e) {
@@ -34,5 +51,17 @@ public class Simulation implements Runnable { // TODO
             }
             day++;
         }
+    }
+
+    public WorldMap getWorldMap() {
+        return worldMap;
+    }
+
+    public void setIsPaused(boolean isPaused) {
+        this.isPaused = isPaused;
+    }
+
+    public boolean getIsPaused() {
+        return this.isPaused;
     }
 }

@@ -13,15 +13,16 @@
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             minHeight="400.0" minWidth="600.0" fx:controller="oop.project.Interface.SimulationVisController">
     <center>
-        <GridPane fx:id="mapGridPane" gridLinesVisible="true" prefHeight="360.0" prefWidth="356.0" scaleX="1.3" scaleY="0.9" BorderPane.alignment="CENTER">
+        <GridPane fx:id="mapGridPane" gridLinesVisible="true" prefHeight="360.0" prefWidth="356.0"
+                  scaleX="1.3" scaleY="0.9" BorderPane.alignment="BOTTOM_RIGHT">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+<!--                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />-->
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+<!--                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />-->
+<!--                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />-->
             </rowConstraints>
             <BorderPane.margin>
                 <Insets bottom="20.0" left="70.0" right="70.0" top="20.0" />
@@ -47,38 +48,38 @@
                 </Label>
                 <HBox prefHeight="33.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" contentDisplay="TOP" graphicTextGap="10.0" prefHeight="41.0" prefWidth="135.0" text="Day number" textAlignment="CENTER" />
-                        <Label fx:id="dayNumberLabel" alignment="CENTER" prefHeight="41.0" prefWidth="70.0" text="100" />
+                        <Label fx:id="dayNumberInfo" alignment="CENTER" contentDisplay="TOP" graphicTextGap="10.0" prefHeight="41.0" prefWidth="135.0" text="Day number" textAlignment="CENTER" />
+                        <Label fx:id="dayNumberLabel" alignment="CENTER" prefHeight="41.0" prefWidth="70.0" text="1" />
                     </children>
                 </HBox>
                 <HBox prefHeight="35.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" prefHeight="44.0" prefWidth="139.0" text="Number of Animals" />
-                        <Label fx:id="numberOfAnimalsLabel" alignment="CENTER" prefHeight="44.0" prefWidth="78.0" text="100" />
+                        <Label fx:id="numberOfAnimalsInfo" alignment="CENTER" prefHeight="44.0" prefWidth="139.0" text="Number of Animals" />
+                        <Label fx:id="numberOfAnimalsLabel" alignment="CENTER" prefHeight="44.0" prefWidth="78.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="36.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" prefHeight="54.0" prefWidth="126.0" text="Number of Plants" />
-                        <Label fx:id="numberOfPlantsLabel" alignment="CENTER" prefHeight="53.0" prefWidth="72.0" text="345" />
+                        <Label fx:id="numberOfPlantsInfo" alignment="CENTER" prefHeight="54.0" prefWidth="126.0" text="Number of Plants" />
+                        <Label fx:id="numberOfPlantsLabel" alignment="CENTER" prefHeight="53.0" prefWidth="72.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="49.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" prefHeight="70.0" prefWidth="145.0" text="The most popular&#xD;   genotypes" />
-                        <Label fx:id="theMostPopularGenotypesLabel" alignment="CENTER" prefHeight="70.0" prefWidth="118.0" text="8888888888" />
+                        <Label fx:id="theMostPopularGenotypesInfo" alignment="CENTER" prefHeight="70.0" prefWidth="145.0" text="The most popular&#xD;   genotypes" />
+                        <Label fx:id="theMostPopularGenotypesLabel" alignment="CENTER" prefHeight="70.0" prefWidth="118.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="46.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" prefHeight="53.0" prefWidth="140.0" text="Average amount&#xD;   of energy" />
-                        <Label fx:id="averegeAmountOfEnergyLabel" alignment="CENTER" prefHeight="46.0" prefWidth="78.0" text="25" />
+                        <Label fx:id="averageAmountOfEnergyInfo" alignment="CENTER" prefHeight="53.0" prefWidth="140.0" text="Average amount&#xD;   of energy" />
+                        <Label fx:id="averageAmountOfEnergyLabel" alignment="CENTER" prefHeight="46.0" prefWidth="78.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="36.0" prefWidth="194.0">
                     <children>
-                        <Label alignment="CENTER" prefHeight="52.0" prefWidth="137.0" text="Average length of life" />
-                        <Label fx:id="averageLengthOfLifeLabel" alignment="CENTER" prefHeight="53.0" prefWidth="64.0" text="15" />
+                        <Label fx:id="averageLengthOfLifeInfo" alignment="CENTER" prefHeight="52.0" prefWidth="137.0" text="Average length of life" />
+                        <Label fx:id="averageLengthOfLifeLabel" alignment="CENTER" prefHeight="53.0" prefWidth="64.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="44.0" prefWidth="194.0">
@@ -86,8 +87,8 @@
                         <Insets left="10.0" />
                     </opaqueInsets>
                     <children>
-                        <Label alignment="CENTER" prefHeight="56.0" prefWidth="135.0" text="Average numberof offspring" />
-                        <Label fx:id="averageNumberOfOffspringLabel" alignment="CENTER" prefHeight="55.0" prefWidth="63.0" text="3" />
+                        <Label fx:id="averageNumberOfOffspringInfo" alignment="CENTER" prefHeight="56.0" prefWidth="135.0" text="Average number&#xD;of offspring" />
+                        <Label fx:id="averageNumberOfOffspringLabel" alignment="CENTER" prefHeight="55.0" prefWidth="63.0" text="-" />
                     </children>
                 </HBox>
                 <HBox prefHeight="100.0" prefWidth="200.0">
